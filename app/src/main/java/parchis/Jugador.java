@@ -3,6 +3,7 @@ package parchis;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
+import parchis.Casilla.TipoCasilla;
 
 /**
  * 
@@ -41,10 +42,10 @@ public class Jugador {
     private Casilla carcel;
 
     /**
-     * Casilla que representa el cielo (en donde las fichas deben de llegar), de
+     * Casilla que representa la entrada al cielo (a donde las fichas deben llegar), de
      * este Jugador.
      */
-    private Casilla cielo;
+    private Casilla entrada;
 
     /**
      * Constructor. Crea un jugador con los parámetros dados.
@@ -54,14 +55,15 @@ public class Jugador {
      * @param numFichas Número de fichas que tendrá el Jugador.
      * @param color     {@link Color} del Jugador, de sus Fichas y sus Casillas.
      */
-    public Jugador(String nombre, int idJugador, Color color, int numFichas) {
+    public Jugador(String nombre, Color color, int numFichas) {
 
         assert (numFichas >= 2 && numFichas <= 4) : "El número de fichas debe estar entre 2 y 4 incluidos.";
 
         this.nombre = nombre;
-        this.idJugador = idJugador;
         this.numFichas = numFichas;
         this.color = color;
+        this.carcel = new Casilla(this, -1, TipoCasilla.CARCEL);
+        this.entrada = new Casilla(this, -1, TipoCasilla.ENTRADA);
         crearFichas();
 
     }
@@ -90,6 +92,15 @@ public class Jugador {
     }
 
     /**
+     * Establece el número con el cuál se identifica a este jugador.
+     * 
+     * @param idJugador Id a asignar al jugador.
+     */
+    public void setIdJugador(int idJugador) {
+        this.idJugador = idJugador;
+    }
+    
+    /**
      * Retorna el identificador de este Jugador.
      * 
      * @return {@link #idJugador}.
@@ -105,6 +116,14 @@ public class Jugador {
      */
     public Color getColor() {
         return color;
+    }
+
+    public Casilla getCarcel() {
+        return carcel;
+    }
+
+    public Casilla getEntrada() {
+        return entrada;
     }
 
 }

@@ -33,12 +33,18 @@ public class Ficha {
 
     /**
      * Mueve esta Ficha de la casilla actual a la casilla <i><b>c</b></i> entregada
-     * como parámetro, siempre y cuando <i><b>c</b></i> no esté llena.
+     * como parámetro, siempre y cuando <i><b>c</b></i> no esté llena. Si
+     * <b><i>c</b></i> es la misma casilla en la que está esta ficha, no se hará
+     * nada.
      * 
      * @param c {@link Casilla} a la cual se moverá esta Ficha.
      * @return Un mensaje describiendo el proceso hecho. Veáse {@link Message}.
      */
     public Message mover(Casilla c) {
+
+        if (this.casilla == c) {
+            return new Message(Type.ERROR, "La ficha ya se encuentra en la casilla c");
+        }
 
         Message m = c.insertarFicha(this);
         if (m.type == Message.Type.ERROR) {
@@ -69,4 +75,12 @@ public class Ficha {
         return casilla;
     }
 
+    public boolean isPrisionera() {
+        return casilla == getJugadorPadre().getCarcel();
+    }
+
+    public boolean isAngel() {
+        return casilla == getJugadorPadre().getEntrada();
+    }
+    
 }

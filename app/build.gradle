@@ -30,13 +30,8 @@ application {
     mainClass = 'parchis.App'
 }
 
-tasks.named('test') {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
-}
-
 javafx {
-    version = '12'
+    version = '17'
     modules = [ 'javafx.controls', 'javafx.fxml' ]
     configuration = 'compileOnly'
 }

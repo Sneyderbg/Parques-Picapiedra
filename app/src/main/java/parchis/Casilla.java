@@ -16,7 +16,7 @@ public class Casilla {
      * 
      * - CARCEL.<br>
      * - SALIDA.<br>
-     * - SEGURO <br>
+     * - SEGURO. <br>
      * - ENTRADA.
      */
     public enum TipoCasilla {
@@ -66,6 +66,9 @@ public class Casilla {
      */
     public Casilla(Jugador jugadorPadre, int IdCasilla, TipoCasilla tipo) {
 
+        if (idCasilla < 0) {
+            assert (tipo == TipoCasilla.CARCEL || tipo == TipoCasilla.ENTRADA);
+        }
         this.idCasilla = IdCasilla;
         this.tipoCasilla = tipo;
         this.fichas = new ArrayList<Ficha>();
@@ -112,12 +115,21 @@ public class Casilla {
     }
 
     /**
+     * Retorna la lista de fichas contenidas en esta casilla.
+     * 
+     * @return {@link #fichas}.
+     */
+    public ArrayList<Ficha> getFichas() {
+        return fichas;
+    }
+
+    /**
      * Retorna el identificador de esta {@link Casilla}.
      * 
      * @return {@link #idCasilla}.
      */
     public int getIdCasilla() {
-        return this.idCasilla;
+        return idCasilla;
     }
 
     /**
@@ -126,7 +138,7 @@ public class Casilla {
      * @return {@link #tipoCasilla}.
      */
     public TipoCasilla getTipoCasilla() {
-        return this.tipoCasilla;
+        return tipoCasilla;
     }
 
     /**
@@ -135,7 +147,7 @@ public class Casilla {
      * @return {@link #jugadorPadre}.
      */
     public Jugador getJugadorPadre() {
-        return this.jugadorPadre;
+        return jugadorPadre;
     }
 
     /**
