@@ -53,7 +53,7 @@ public class Ficha {
 
         this.casilla.removerFicha(this);
         this.casilla = c;
-        return new Message(Type.SUCCESS, "Ficha movida a la casilla %d".formatted(c.getIdCasilla()));
+        return new Message(Type.SUCCESS, String.format("Ficha movida a la casilla %d", c.getIdCasilla()));
 
     }
 

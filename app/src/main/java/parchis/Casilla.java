@@ -86,11 +86,11 @@ public class Casilla {
     public Message insertarFicha(Ficha ficha) {
 
         if (fichas.size() == MAX_FICHAS) {
-            return new Message(Type.ERROR, "No es posible insertar más de %d fichas".formatted(MAX_FICHAS));
+            return new Message(Type.ERROR, String.format("No es posible insertar más de %d fichas", MAX_FICHAS));
         }
 
         fichas.add(ficha);
-        return new Message(Type.SUCCESS, "Ficha insertada en la posición %d".formatted(fichas.size()));
+        return new Message(Type.SUCCESS, String.format("Ficha insertada en la posición %d", fichas.size()));
 
     }
 
@@ -110,7 +110,7 @@ public class Casilla {
         }
 
         fichas.remove(i);
-        return new Message(Type.SUCCESS, "ficha eliminada de la posición %d".formatted(i));
+        return new Message(Type.SUCCESS, String.format("ficha eliminada de la posición %d", i));
 
     }
 

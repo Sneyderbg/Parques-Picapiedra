@@ -17,7 +17,7 @@ public class Message {
     }
 
     public String getMessage() {
-        return "%s: %s.".formatted(this.type, this.info);
+        return String.format("%s: %s.", this.type, this.info);
     }
     
 }

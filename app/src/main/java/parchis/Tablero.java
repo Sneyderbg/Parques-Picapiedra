@@ -44,7 +44,7 @@ public class Tablero {
     public Tablero(int numJugadores, int numFichasPorJugador, ArrayList<Jugador> jugadores) {
 
         assert (jugadores.size() == numJugadores)
-                : "Deben haber exactamente %d nombres de jugadores".formatted(numJugadores);
+                : String.format("Deben haber exactamente %d nombres de jugadores", numJugadores);
 
         this.numJugadores = numJugadores;
         this.numFichasPorJugador = numFichasPorJugador;
@@ -91,7 +91,7 @@ public class Tablero {
         }
 
         jugadores.add(jugador);
-        return new Message(Type.SUCCESS, "Jugador añadido en la posición %d".formatted(jugadores.size()));
+        return new Message(Type.SUCCESS, String.format("Jugador añadido en la posición %d", jugadores.size()));
 
     }
 
@@ -99,11 +99,11 @@ public class Tablero {
 
         int i = jugadores.indexOf(jugador);
         if (i == -1) {
-            return new Message(Type.ERROR, "No existe el jugador con nombre %s".formatted(jugador.getNombre()));
+            return new Message(Type.ERROR, String.format("No existe el jugador con nombre %s", jugador.getNombre()));
         }
 
         jugadores.remove(i);
-        return new Message(Type.SUCCESS, "Jugador eliminado de la posición %d".formatted(i));
+        return new Message(Type.SUCCESS, String.format("Jugador eliminado de la posición %d", i));
 
     }
 
