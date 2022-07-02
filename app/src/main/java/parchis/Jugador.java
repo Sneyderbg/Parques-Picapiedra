@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import parchis.Casilla.TipoCasilla;
 
 /**
+ * Esta clase representa un Jugador con sus fichas y casillas que le pertenecen.
  * 
  */
 public class Jugador {
@@ -26,9 +27,9 @@ public class Jugador {
     private Color color;
 
     /**
-     * Número de fichas que tiene este Jugador.
+     * Número de fichas para cualquier Jugador.
      */
-    private int numFichas;
+    private static int numFichas;
 
     /**
      * Vector que contiene las fichas pertenecientes a este Jugador.
@@ -42,7 +43,8 @@ public class Jugador {
     private Casilla carcel;
 
     /**
-     * Casilla que representa la entrada al cielo (a donde las fichas deben llegar), de
+     * Casilla que representa la entrada al cielo (a donde las fichas deben llegar),
+     * de
      * este Jugador.
      */
     private Casilla entrada;
@@ -60,11 +62,9 @@ public class Jugador {
         assert (numFichas >= 2 && numFichas <= 4) : "El número de fichas debe estar entre 2 y 4 incluidos.";
 
         this.nombre = nombre;
-        this.numFichas = numFichas;
         this.color = color;
         this.carcel = new Casilla(this, -1, TipoCasilla.CARCEL);
         this.entrada = new Casilla(this, -1, TipoCasilla.ENTRADA);
-        crearFichas();
 
     }
 
@@ -99,7 +99,7 @@ public class Jugador {
     public void setIdJugador(int idJugador) {
         this.idJugador = idJugador;
     }
-    
+
     /**
      * Retorna el identificador de este Jugador.
      * 
@@ -118,10 +118,29 @@ public class Jugador {
         return color;
     }
 
+    /**
+     * Asigna el número de fichas que tendrá cada jugador que se cree.
+     * 
+     * @param numFichas
+     */
+    public static void setNumFichas(int numFichas) {
+        Jugador.numFichas = numFichas;
+    }
+
+    /**
+     * Retorna la casilla cárcel de este Jugador.
+     * 
+     * @return {@link Casilla} cárcel.
+     */
     public Casilla getCarcel() {
         return carcel;
     }
 
+    /**
+     * Retorna la casilla entrada de este Jugador.
+     * 
+     * @return {@link Casilla} entrada.
+     */
     public Casilla getEntrada() {
         return entrada;
     }

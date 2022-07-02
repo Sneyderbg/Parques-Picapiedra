@@ -75,12 +75,24 @@ public class Ficha {
         return casilla;
     }
 
+    /**
+     * Retorna {@code true} si la ficha se encuentra en la cárcel, {@code false} de
+     * lo contrario
+     *
+     * @return {@code true} o {@code false}.
+     */
     public boolean isPrisionera() {
         return casilla == getJugadorPadre().getCarcel();
     }
 
+    /**
+     * Retorna {@code true} si la ficha llegó al cielo, {@code false} de lo
+     * contrario.
+     * 
+     * @return {@code true} o {@code false}.
+     */
     public boolean isAngel() {
         return casilla == getJugadorPadre().getEntrada();
     }
-    
+
 }

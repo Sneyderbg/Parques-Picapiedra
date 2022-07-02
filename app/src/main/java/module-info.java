@@ -6,4 +6,6 @@ module ParchisModule {
     opens app to javafx.fxml;
 
     exports app;
+
+    exports parchis;
 }

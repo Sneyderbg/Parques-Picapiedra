@@ -11,12 +11,11 @@ public class Parchis extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        System.out.println(getClass().getResource(""));
         Parent root = FXMLLoader.load(getClass().getResource("window.fxml"));
 
         Scene scene = new Scene(root);
         
-        primaryStage.setTitle("ok");
+        primaryStage.setTitle("Parqués");
         primaryStage.setScene(scene);
         primaryStage.show();
 
