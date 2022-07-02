@@ -4,12 +4,14 @@ import java.util.Random;
 
 public class Dado {
 
-    private int valor = 6;
+    private int valor;
 
     private Random rand;
 
     public Dado() {
 
+        this.valor = 6;
+        
     }
 
     public void tirar() {

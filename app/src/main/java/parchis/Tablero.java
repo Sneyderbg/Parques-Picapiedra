@@ -207,11 +207,68 @@ public class Tablero {
 
     }
 
+    /**
+     * Mueve la ficha <b>f</b> a la casilla <b>c</b>, enviando a la cárcel a los
+     * oponentes según sea el caso.
+     * <p>
+     * Si la casilla a la que se quiere mover la ficha es:
+     * <p>
+     * <ul>
+     * <li>SEGURO: se envían a todos los oponentes de esa casilla a la cárcel.</li>
+     * <li>SALIDA: se envían a todos los oponentes de esa casilla a la cárcel, si la
+     * ficha <b>f</b> está saliendo de la cárcel.</li>
+     * <li>ENTRADA: si al mover esta ficha a la casilla entrada ya no quedan más
+     * fichas en juego, el jugador al que le pertenece la ficha será el
+     * ganador.</li>
+     * </ul>
+     * 
+     * @param f La ficha a mover.
+     * @param c La casilla a la que se quiere mover la ficha.
+     * @return
+     */
     public Message moverFicha(Ficha f, Casilla c) {
 
-        return f.mover(c);
+        switch (c.getTipoCasilla()) {
+            case SEGURO:
 
-        // TODO completar para que las fichas coman otras fichas.
+                for (Ficha fichasOponente : c.getFichas()) {
+
+                    if (fichasOponente.getColor() != f.getColor()) {
+                        fichasOponente.encarcelar();
+                    }
+
+                }
+                break;
+
+            case SALIDA:
+
+                if (f.getCasilla() == f.getCarcel()) {
+
+                    for (Ficha fichasOponente : c.getFichas()) {
+
+                        if (fichasOponente.getColor() != f.getColor()) {
+                            fichasOponente.encarcelar();
+                        }
+
+                    }
+
+                }
+                break;
+
+            case ENTRADA:
+
+                if (f.getEntrada().getFichas().size() == numFichasPorJugador - 1) {
+
+                    f.getJugadorPadre().setGanador(true);
+
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        return f.mover(c);
 
     }
 
@@ -227,7 +284,7 @@ public class Tablero {
      * @return {@link Casilla} siguiente si se mueve la ficha en <b>n</b>
      *         posiciones.
      */
-    public Casilla siguienteCasilla(Ficha f, int n) {
+    public Casilla siguienteCasillaEspecial(Ficha f, int n) {
 
         Casilla casillaActual, casillaSiguiente;
         casillaActual = f.getCasilla();
@@ -238,7 +295,7 @@ public class Tablero {
         if (n > 8) {
 
             // se comprueba la casilla más alejada
-            idxNextCasilla += 2;
+            idxNextCasilla = idxNextCasilla + 2;
             casillaSiguiente = casillas.get(idxNextCasilla);
 
             // se comprueba si la casilla más alejada es la salida con el mismo color que la
@@ -254,7 +311,7 @@ public class Tablero {
         } else { // n <= 8
 
             // se comprueba la casilla más cercana
-            idxNextCasilla += 1;
+            idxNextCasilla = idxNextCasilla + 1;
             casillaSiguiente = casillas.get(idxNextCasilla);
 
             // se comprueba si el movimiento conduce a la entrada del jugador al que
@@ -273,6 +330,7 @@ public class Tablero {
         // se calcula el movimiento necesario para pasar de esta casilla especial a la
         // siguiente casilla especial usando sus id's de casilla
         numNecesario = casillaSiguiente.getIdCasilla() - casillaActual.getIdCasilla();
+        numNecesario = numNecesario % 17;
         if (n == numNecesario) {
             return casillaSiguiente;
         }
@@ -326,7 +384,7 @@ public class Tablero {
     public Estado isTableroEnJuego() {
         return estado;
     }
-    
+
 }
 
 enum Estado {

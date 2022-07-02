@@ -1,10 +1,16 @@
 package app;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 
 public class WindowController implements Initializable{
@@ -24,6 +30,13 @@ public class WindowController implements Initializable{
         drawingPane.getChildren().add(parchisDrawingCanvas);
         
         parchisDrawingCanvas.nuevoTablero();
+        
+    }
+
+    @FXML
+    void click(MouseEvent evt){
+        
+
         
     }
     

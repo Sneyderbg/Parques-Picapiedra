@@ -2,8 +2,8 @@
 
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane minHeight="500.0" minWidth="500.0" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.WindowController">
+<AnchorPane minHeight="500.0" minWidth="500.0" prefHeight="800.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.WindowController">
    <children>
-    <AnchorPane fx:id="drawingPane" prefHeight="500.0" prefWidth="500.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <AnchorPane fx:id="drawingPane" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#click" prefHeight="800.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
    </children>
 </AnchorPane>

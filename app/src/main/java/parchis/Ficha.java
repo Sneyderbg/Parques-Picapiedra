@@ -1,5 +1,6 @@
 package parchis;
 
+import javafx.scene.paint.Color;
 import parchis.Message.Type;
 
 /**
@@ -34,7 +35,7 @@ public class Ficha {
     /**
      * Mueve esta Ficha de la casilla actual a la casilla <i><b>c</b></i> entregada
      * como parámetro, siempre y cuando <i><b>c</b></i> no esté llena. Si
-     * <b><i>c</b></i> es la misma casilla en la que está esta ficha, no se hará
+     * <i><b>c</b></i> es la misma casilla en la que está esta ficha, no se hará
      * nada.
      * 
      * @param c {@link Casilla} a la cual se moverá esta Ficha.
@@ -95,4 +96,20 @@ public class Ficha {
         return casilla == getJugadorPadre().getEntrada();
     }
 
+    public Color getColor() {
+        return getJugadorPadre().getColor();
+    }
+
+    public void encarcelar(){
+        mover(casilla.getJugadorPadre().getCarcel());
+    }
+    
+    public Casilla getCarcel(){
+        return getJugadorPadre().getCarcel();
+    }
+
+    public Casilla getEntrada() {
+        return getJugadorPadre().getEntrada();
+    }
+    
 }

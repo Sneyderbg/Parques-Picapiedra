@@ -50,10 +50,16 @@ public class Jugador {
     private Casilla entrada;
 
     /**
+     * Describe si este jugador es el ganador.
+     */
+    private boolean ganador;
+
+    private boolean puedeEnviarACarcel;
+
+    /**
      * Constructor. Crea un jugador con los parámetros dados.
      * 
      * @param nombre    Nombre del Jugador.
-     * @param idJugador Identificador del Jugador.
      * @param numFichas Número de fichas que tendrá el Jugador.
      * @param color     {@link Color} del Jugador, de sus Fichas y sus Casillas.
      */
@@ -65,6 +71,8 @@ public class Jugador {
         this.color = color;
         this.carcel = new Casilla(this, -1, TipoCasilla.CARCEL);
         this.entrada = new Casilla(this, -1, TipoCasilla.ENTRADA);
+        this.ganador = false;
+        this.puedeEnviarACarcel = false;
 
     }
 
@@ -121,7 +129,7 @@ public class Jugador {
     /**
      * Asigna el número de fichas que tendrá cada jugador que se cree.
      * 
-     * @param numFichas
+     * @param numFichas Número de fichas que tendrá cada jugador.
      */
     public static void setNumFichas(int numFichas) {
         Jugador.numFichas = numFichas;
@@ -143,6 +151,22 @@ public class Jugador {
      */
     public Casilla getEntrada() {
         return entrada;
+    }
+
+    public void setGanador(boolean ganador) {
+        this.ganador = ganador;
+    }
+    
+    public boolean isGanador() {
+        return ganador;
+    }
+
+    public void setPuedeEnviarACarcel(boolean puedeEnviarACarcel) {
+        this.puedeEnviarACarcel = puedeEnviarACarcel;
+    }
+
+    public boolean puedeEnviarACarcel(){
+        return this.puedeEnviarACarcel;
     }
 
 }

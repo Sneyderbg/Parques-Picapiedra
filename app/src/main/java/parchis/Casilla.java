@@ -1,6 +1,7 @@
 package parchis;
 
 import java.util.ArrayList;
+import java.util.logging.FileHandler;
 
 import javafx.scene.paint.Color;
 import parchis.Message.Type;
@@ -60,7 +61,7 @@ public class Casilla {
     /**
      * Constructor. Crea una casilla con los parámetros dados.
      * 
-     * @param jugadorPadre Jugador al que pertenece esta {@linkCasilla}.
+     * @param jugadorPadre Jugador al que pertenece esta {@link Casilla}.
      * @param IdCasilla    Entero que identifica esta {@link Casilla}.
      * @param tipo         Tipo de {@link Casilla}. Veáse {@link TipoCasilla}.
      */
@@ -113,7 +114,7 @@ public class Casilla {
         return new Message(Type.SUCCESS, String.format("ficha eliminada de la posición %d", i));
 
     }
-
+    
     /**
      * Retorna la lista de fichas contenidas en esta casilla.
      * 
