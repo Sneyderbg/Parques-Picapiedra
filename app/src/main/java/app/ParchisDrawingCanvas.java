@@ -1,12 +1,8 @@
 package app;
 
-import java.util.ArrayList;
-
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import parchis.Jugador;
 import parchis.Tablero;
 
 public class ParchisDrawingCanvas extends Canvas {

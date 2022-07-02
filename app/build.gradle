@@ -1,7 +1,7 @@
 plugins {
   id 'application'
-  id 'org.openjfx.javafxplugin' version '0.0.10'
-  id 'org.beryx.jlink' version '2.24.4'
+  id 'org.openjfx.javafxplugin' version '0.0.13'
+  id 'org.beryx.jlink' version '2.25.0'
 }
 
 repositories {
@@ -15,7 +15,6 @@ javafx {
 
 application {
     mainClass = "app.Parchis"
-    mainModule = "ParchisModule"
 }
 
 jlink {
