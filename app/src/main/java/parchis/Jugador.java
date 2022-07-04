@@ -3,7 +3,6 @@ package parchis;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
-import parchis.Casilla.TipoCasilla;
 
 /**
  * Esta clase representa un Jugador con sus fichas y casillas que le pertenecen.
@@ -15,11 +14,6 @@ public class Jugador {
      * String que describe el nombre de este Jugador.
      */
     private String nombre;
-
-    /**
-     * Entero con el cuál se identifica este Jugador.
-     */
-    private int idJugador;
 
     /**
      * Color con el cuál se mostrará las fichas y casillas de este Jugador.
@@ -60,17 +54,12 @@ public class Jugador {
      * Constructor. Crea un jugador con los parámetros dados.
      * 
      * @param nombre    Nombre del Jugador.
-     * @param numFichas Número de fichas que tendrá el Jugador.
      * @param color     {@link Color} del Jugador, de sus Fichas y sus Casillas.
      */
-    public Jugador(String nombre, Color color, int numFichas) {
-
-        assert (numFichas >= 2 && numFichas <= 4) : "El número de fichas debe estar entre 2 y 4 incluidos.";
+    public Jugador(String nombre, Color color) {
 
         this.nombre = nombre;
         this.color = color;
-        this.carcel = new Casilla(this, -1, TipoCasilla.CARCEL);
-        this.entrada = new Casilla(this, -1, TipoCasilla.ENTRADA);
         this.ganador = false;
         this.puedeEnviarACarcel = false;
 
@@ -82,10 +71,15 @@ public class Jugador {
      */
     public void crearFichas() {
 
+        assert (numFichas >= 2);
+        
+        assert (getCarcel() != null && getEntrada() != null)
+                : "Se debe asignar tanto la casilla carcel, como la casilla entrada de este jugador";
+
         fichas = new ArrayList<Ficha>();
 
         for (int i = 0; i < numFichas; i++) {
-            fichas.add(new Ficha(this, this.carcel));
+            fichas.add(new Ficha(this)); // Se crea cada ficha y se insertan en la carcel
         }
 
     }
@@ -97,24 +91,6 @@ public class Jugador {
      */
     public String getNombre() {
         return nombre;
-    }
-
-    /**
-     * Establece el número con el cuál se identifica a este jugador.
-     * 
-     * @param idJugador Id a asignar al jugador.
-     */
-    public void setIdJugador(int idJugador) {
-        this.idJugador = idJugador;
-    }
-
-    /**
-     * Retorna el identificador de este Jugador.
-     * 
-     * @return {@link #idJugador}.
-     */
-    public int getIdJugador() {
-        return idJugador;
     }
 
     /**
@@ -156,7 +132,7 @@ public class Jugador {
     public void setGanador(boolean ganador) {
         this.ganador = ganador;
     }
-    
+
     public boolean isGanador() {
         return ganador;
     }
@@ -165,8 +141,16 @@ public class Jugador {
         this.puedeEnviarACarcel = puedeEnviarACarcel;
     }
 
-    public boolean puedeEnviarACarcel(){
+    public boolean puedeEnviarACarcel() {
         return this.puedeEnviarACarcel;
+    }
+
+    public void setCarcel(Casilla carcel) {
+        this.carcel = carcel;
+    }
+
+    public void setEntrada(Casilla entrada) {
+        this.entrada = entrada;
     }
 
 }

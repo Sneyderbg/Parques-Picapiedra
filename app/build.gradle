@@ -14,7 +14,7 @@ javafx {
 }
 
 application {
-    mainClass = "app.Parchis"
+    mainClass = "app.App"
 }
 
 jlink {
@@ -22,4 +22,10 @@ jlink {
     launcher {
         name = 'Parchis'
     }
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }

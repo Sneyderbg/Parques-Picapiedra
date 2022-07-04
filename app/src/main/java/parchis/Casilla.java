@@ -1,16 +1,16 @@
 package parchis;
 
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import parchis.Message.Type;
+import javafx.scene.shape.Rectangle;
 
 /**
- * Clase que representa las casillas especiales del parqués, siendo éstas:
+ * Clase que representa las casillas especiales del parqués, siendo estas:
  * Cárcel, salida, seguro, entrada.
  */
-public class Casilla {
+public class Casilla extends Rectangle {
 
     /**
      * Enumerado para describir el tipo de {@link Casilla}.<br>
@@ -26,11 +26,6 @@ public class Casilla {
         SEGURO,
         ENTRADA,
     }
-
-    /**
-     * Máximo número de fichas que caben en una casilla.
-     */
-    private static final int MAX_FICHAS = 4;
 
     /**
      * Identificador de casilla;
@@ -49,14 +44,11 @@ public class Casilla {
     private Color color;
 
     /**
-     * Jugador a la que esta casilla pertenece.
-     */
-    private Jugador jugadorPadre;
-
-    /**
      * Vector que contiene las fichas que actualmente están en esta {@link Casilla}
      */
     private ArrayList<Ficha> fichas;
+
+    private double centerX, centerY;
 
     /**
      * Constructor. Crea una casilla con los parámetros dados.
@@ -65,7 +57,9 @@ public class Casilla {
      * @param IdCasilla    Entero que identifica esta {@link Casilla}.
      * @param tipo         Tipo de {@link Casilla}. Veáse {@link TipoCasilla}.
      */
-    public Casilla(Jugador jugadorPadre, int IdCasilla, TipoCasilla tipo) {
+    public Casilla(int IdCasilla, TipoCasilla tipo, Color color) {
+
+        super();
 
         if (idCasilla < 0) {
             assert (tipo == TipoCasilla.CARCEL || tipo == TipoCasilla.ENTRADA);
@@ -73,48 +67,53 @@ public class Casilla {
         this.idCasilla = IdCasilla;
         this.tipoCasilla = tipo;
         this.fichas = new ArrayList<Ficha>();
-        this.color = jugadorPadre.getColor();
+        this.color = color;
 
     }
 
     /**
-     * Inserta una ficha en el vector {@link fichas} siempre que no sobrepase el
-     * máximo número de fichas {@link MAX_FICHAS}.
+     * Inserta una ficha en el vector {@link fichas}.
      * 
      * @param ficha {@link Ficha} a insertar en esta {@link Casilla}.
-     * @return Un mensaje describiendo el proceso hecho. Veáse {@link Message}.
      */
-    public Message insertarFicha(Ficha ficha) {
+    public void insertarFicha(Ficha ficha) {
 
-        if (fichas.size() == MAX_FICHAS) {
-            return new Message(Type.ERROR, String.format("No es posible insertar más de %d fichas", MAX_FICHAS));
-        }
-
+        ficha.setCasilla(this);
         fichas.add(ficha);
-        return new Message(Type.SUCCESS, String.format("Ficha insertada en la posición %d", fichas.size()));
 
     }
 
+    public void insertarTodasLasFichas(ArrayList<Ficha> fichasAInsertar) {
+
+        for (Ficha ficha : fichasAInsertar) {
+
+            ficha.setCasilla(this);
+            fichas.add(ficha);
+            
+        }
+        
+    }
+    
     /**
-     * Elimina una ficha del vector {@link fichas} en caso de que ésta esté
+     * Elimina una ficha del vector {@link fichas} en caso de que esta esté
      * presente, de lo contrario no hace nada.
      * 
      * @param ficha {@link Ficha} a eliminar del vector {@link fichas}.
-     * @return Un mensaje describiendo el proceso hecho. Veáse {@link Message}.
+     * @return {@code true} si la ficha existía y se removió, {@code false} de lo
+     *         contrario.
      */
-    public Message removerFicha(Ficha ficha) {
+    public boolean removerFicha(Ficha ficha) {
 
-        int i = fichas.indexOf(ficha);
-
-        if (i == -1) {
-            return new Message(Type.ERROR, "La ficha no existe.");
-        }
-
-        fichas.remove(i);
-        return new Message(Type.SUCCESS, String.format("ficha eliminada de la posición %d", i));
+        return fichas.remove(ficha);
 
     }
-    
+
+    public void removerTodasLasFichas(){
+
+        fichas.clear();
+        
+    }
+
     /**
      * Retorna la lista de fichas contenidas en esta casilla.
      * 
@@ -143,21 +142,113 @@ public class Casilla {
     }
 
     /**
-     * Retorna el {@link Jugador} al que esta {@link Casilla} pertenece.
-     * 
-     * @return {@link #jugadorPadre}.
-     */
-    public Jugador getJugadorPadre() {
-        return jugadorPadre;
-    }
-
-    /**
      * Retorna el color de esta Casilla.
      * 
      * @return {@link #color}.
      */
     public Color getColor() {
         return color;
+    }
+
+    public void updateRect(double x, double y, double width, double height, double angle) {
+        this.centerX = x;
+        this.centerY = y;
+        setX(x - width / 2);
+        setY(y - height / 2);
+        setWidth(width);
+        setHeight(height);
+        setRotate(angle);
+        setFill(Color.TRANSPARENT);
+    }
+
+    public void drawFichas(GraphicsContext gc) {
+
+        if (fichas.size() == 0) {
+            return;
+        }
+
+        if (getTipoCasilla() == TipoCasilla.CARCEL || getTipoCasilla() == TipoCasilla.ENTRADA) {
+
+            drawFichasAsGroup(gc, getWidth() / 6);
+
+        } else {
+
+            drawFichasAsLine(gc, getHeight() / 3);
+
+        }
+
+    }
+
+    private void drawFichasAsLine(GraphicsContext gc, double radius) {
+
+        int n = fichas.size();
+        double posXEnCasilla[] = new double[n];
+
+        for (int i = 0; i < n; i++) {
+
+            posXEnCasilla[i] = ((i + 1) * getWidth()) / (n + 1);
+
+        }
+
+        gc.save();
+
+        gc.translate(centerX, centerY);
+        gc.rotate(getRotate());
+        gc.translate(-centerX, -centerY);
+
+        for (int i = 0; i < fichas.size(); i++) {
+
+            fichas.get(i).draw(gc, getX() + posXEnCasilla[i], centerY, radius);
+
+        }
+
+        gc.restore();
+
+    }
+
+    private void drawFichasAsGroup(GraphicsContext gc, double radius) {
+
+        int n = fichas.size();
+        double posXEnCasilla, posYEnCasilla;
+
+        switch (n) {
+            case 4:
+
+                for (int i = 0; i < 2; i++) {
+
+                    posXEnCasilla = (i + 1) * getWidth() / 3;
+                    for (int j = 0; j < 2; j++) {
+
+                        posYEnCasilla = (j + 1) * getHeight() / 3;
+
+                        fichas.get(2 * i + j).draw(gc, getX() + posXEnCasilla, getY() + posYEnCasilla, radius);
+
+                    }
+
+                }
+                break;
+
+            case 3:
+
+                for (int i = 0; i < 2; i++) {
+
+                    posXEnCasilla = (i + 1) * getWidth() / (i + 2);
+                    for (int j = 0; j < i + 1; j++) {
+
+                        posYEnCasilla = (j + 1) * getHeight() / 3;
+
+                        fichas.get(i + j).draw(gc, getX() + posXEnCasilla, getY() + posYEnCasilla, radius);
+
+                    }
+
+                }
+                break;
+
+            default:
+                drawFichasAsLine(gc, radius);
+                break;
+        }
+
     }
 
 }

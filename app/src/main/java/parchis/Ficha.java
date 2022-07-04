@@ -1,7 +1,7 @@
 package parchis;
 
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import parchis.Message.Type;
 
 /**
  * Clase que representa las fichas con las que se juega en el Parqués.
@@ -19,42 +19,23 @@ public class Ficha {
     private Casilla casilla;
 
     /**
-     * Constructor. Crea una Ficha con los parámetros dados.
-     * 
-     * @param jugadorPadre   {@link Jugador} al cual se le asigna esta Ficha.
-     * @param casillaInicial {@link Casilla} en la cual se ubicara esta Ficha
-     *                       inicialmente.
+     * Color de esta Ficha.
      */
-    public Ficha(Jugador jugadorPadre, Casilla casillaInicial) {
-
-        this.jugadorPadre = jugadorPadre;
-        this.casilla = casillaInicial;
-
-    }
+    private Color color;
 
     /**
-     * Mueve esta Ficha de la casilla actual a la casilla <i><b>c</b></i> entregada
-     * como parámetro, siempre y cuando <i><b>c</b></i> no esté llena. Si
-     * <i><b>c</b></i> es la misma casilla en la que está esta ficha, no se hará
-     * nada.
+     * Constructor. Crea una Ficha con los parámetros dados, y la inserta en la
+     * casilla carcel del jugador al cual pertence.
      * 
-     * @param c {@link Casilla} a la cual se moverá esta Ficha.
-     * @return Un mensaje describiendo el proceso hecho. Veáse {@link Message}.
+     * @param jugadorPadre {@link Jugador} al cual se le asigna esta Ficha.
      */
-    public Message mover(Casilla c) {
+    public Ficha(Jugador jugadorPadre) {
 
-        if (this.casilla == c) {
-            return new Message(Type.ERROR, "La ficha ya se encuentra en la casilla c");
-        }
+        this.jugadorPadre = jugadorPadre;
+        this.casilla = jugadorPadre.getCarcel();
+        this.color = jugadorPadre.getColor();
 
-        Message m = c.insertarFicha(this);
-        if (m.type == Message.Type.ERROR) {
-            return m;
-        }
-
-        this.casilla.removerFicha(this);
-        this.casilla = c;
-        return new Message(Type.SUCCESS, String.format("Ficha movida a la casilla %d", c.getIdCasilla()));
+        this.casilla.insertarFicha(this);
 
     }
 
@@ -65,6 +46,10 @@ public class Ficha {
      */
     public Jugador getJugadorPadre() {
         return jugadorPadre;
+    }
+
+    public void setCasilla(Casilla casilla) {
+        this.casilla = casilla;
     }
 
     /**
@@ -97,19 +82,30 @@ public class Ficha {
     }
 
     public Color getColor() {
-        return getJugadorPadre().getColor();
+        return this.color;
     }
 
-    public void encarcelar(){
-        mover(casilla.getJugadorPadre().getCarcel());
+    public void encarcelar() {
+        getCasilla().removerFicha(this);
+        getCarcel().insertarFicha(this);
     }
-    
-    public Casilla getCarcel(){
+
+    public Casilla getCarcel() {
         return getJugadorPadre().getCarcel();
     }
 
     public Casilla getEntrada() {
         return getJugadorPadre().getEntrada();
     }
-    
+
+    public void draw(GraphicsContext gc, double centerX, double centerY, double radius) {
+
+        gc.setFill(getColor());
+        gc.setStroke(Color.WHITE);
+
+        gc.fillOval(centerX, centerY, radius, radius);
+        gc.strokeOval(centerX, centerY, radius, radius);
+
+    }
+
 }

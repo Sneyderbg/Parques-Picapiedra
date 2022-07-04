@@ -10,6 +10,7 @@ public class Dado {
 
     public Dado() {
 
+        rand = new Random();
         this.valor = 6;
         
     }

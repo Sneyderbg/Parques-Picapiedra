@@ -2,15 +2,29 @@ package parchis;
 
 import java.util.ArrayList;
 
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import parchis.Casilla.TipoCasilla;
-import parchis.Message.Type;
 
-public class Tablero {
+public class Tablero extends Canvas {
+
+    public enum Estado {
+        NoIniciado,
+        EnJuego,
+        Finalizado,
+    }
 
     /**
      * Número de jugadores que hay en juego.
      */
     private int numJugadores;
+
+    /**
+     * Número de jugadores no nulos que hay en el vector {@link #jugadores}.
+     */
+    private int numJugadoresAñadidos;
 
     /**
      * Número de fichas con las los jugadores van a jugar.
@@ -27,7 +41,7 @@ public class Tablero {
      * 
      * @see {@link Jugador}
      */
-    private ArrayList<Jugador> jugadores;
+    private Jugador jugadores[];
 
     /**
      * Vector que contiene las casillas especiales por las cuales se mueven todas
@@ -41,6 +55,11 @@ public class Tablero {
     private ArrayList<Casilla> casillas;
 
     /**
+     * Colores a usar según la imagen "parchis6.png", en sentido antihorario.
+     */
+    private ArrayList<Color> colors;
+
+    /**
      * Dados del juego.
      * 
      * @see {@link Dado}
@@ -51,6 +70,8 @@ public class Tablero {
      * Controla el estado del tablero.
      */
     private Estado estado;
+
+    private Image background;
 
     /**
      * Constructor. Crea el Tablero con los parámetros dados.
@@ -64,90 +85,126 @@ public class Tablero {
      */
     public Tablero(int numJugadores, int numFichasPorJugador) {
 
+        super();
         this.numJugadores = numJugadores;
         this.numFichasPorJugador = numFichasPorJugador;
-
-        this.jugadores = new ArrayList<Jugador>();
+        this.numJugadoresAñadidos = 0;
+        this.jugadores = new Jugador[6];
         this.dado0 = new Dado();
         this.dado1 = new Dado();
         this.estado = Estado.NoIniciado;
         this.jugadorActual = null;
-
-    }
-
-    /**
-     * Constructor. Crea un Tablero con los parámetros dados.
-     * <p>
-     * Si los jugadores dados en el vector <b>jugadores</b> no concuerda con el
-     * parámetro <b>numJugadores</b>, ocurrirá un error y no se creará el tablero.
-     * 
-     * @param numJugadores        Número de jugadores que van a jugar.
-     * @param numFichasPorJugador Número de fichas que tendrá cada jugador.
-     * @param jugadores           {@link ArrayList} que contiene la lista de
-     *                            jugadores.
-     */
-    public Tablero(int numJugadores, int numFichasPorJugador, ArrayList<Jugador> jugadores) {
-
-        assert (jugadores.size() == numJugadores)
-                : String.format("Deben haber exactamente %d nombres de jugadores", numJugadores);
-
-        this.numJugadores = numJugadores;
-        this.numFichasPorJugador = numFichasPorJugador;
-        this.dado0 = new Dado();
-        this.dado1 = new Dado();
-        this.estado = Estado.NoIniciado;
-        this.jugadorActual = null;
-
-        construirTablero();
+        this.colors = new ArrayList<Color>();
+        this.colors.add(Color.GREEN);
+        this.colors.add(Color.ORANGE);
+        this.colors.add(Color.PURPLE);
+        this.colors.add(Color.RED);
+        this.colors.add(Color.YELLOW);
+        this.colors.add(Color.BLUE);
+        this.background = new Image(getClass().getResourceAsStream("parchis6.png"));
 
     }
 
     /**
      * Construye las casillas especiales del tablero, siempre que el vector
-     * {@link #jugadores} esté completo.
+     * {@link #jugadores} contenga 2 jugadores como mínimo.
      */
     public void construirTablero() {
 
-        assert (jugadores.size() == numJugadores) : "Se debe rellenar la lista de jugadores.";
+        assert (numJugadoresAñadidos == 2) : "Se debe rellenar la lista de jugadores.";
 
         casillas = new ArrayList<Casilla>();
 
+        Casilla casillaSeguro1, casillaSalida, casillaSeguro2, casillaCarcel, casillaEntrada;
+
         Jugador j;
-        int numCasilla = 0;
+        Color colorCasilla;
+        int numCasilla, i;
+        numCasilla = 0;
 
-        for (int i = 0; i < numJugadores; i++) {
+        i = 0;
 
-            j = jugadores.get(i);
-            j.setIdJugador(i);
+        // 6 ciclos ya que hay seis posiciones de diferente color en el tablero
+        while (i < 6) {
 
-            casillas.add(new Casilla(j, numCasilla, TipoCasilla.SEGURO));
+            colorCasilla = colors.get(i);
+            j = jugadores[i];
+
+            // si hay un jugador en la posición i
+            if (j != null) {
+
+                // se crean las casillas carcel y entrada para este jugador
+                casillaCarcel = new Casilla(-1, TipoCasilla.CARCEL, colorCasilla);
+                casillaEntrada = new Casilla(-1, TipoCasilla.ENTRADA, colorCasilla);
+
+                // se asignan
+                j.setCarcel(casillaCarcel);
+                j.setEntrada(casillaEntrada);
+
+                // se crean las fichas de este jugador.
+                j.crearFichas();
+
+            }
+
+            // se crean y se añaden las casillas con color 'colorCasilla', y se asignan los
+            // id's según se ve en la imagen "parchis6.png"
+
+            // primera casilla seguro
+            casillaSeguro1 = new Casilla(numCasilla, TipoCasilla.SEGURO, colorCasilla);
+            casillas.add(casillaSeguro1);
             numCasilla = numCasilla + 5;
 
-            casillas.add(new Casilla(j, numCasilla, TipoCasilla.SALIDA));
+            // casilla salida
+            casillaSalida = new Casilla(numCasilla, TipoCasilla.SALIDA, colorCasilla);
+            casillas.add(casillaSalida);
             numCasilla = numCasilla + 7;
 
-            casillas.add(new Casilla(j, numCasilla, TipoCasilla.SEGURO));
+            // segunda casilla seguro
+            casillaSeguro2 = new Casilla(numCasilla, TipoCasilla.SEGURO, colorCasilla);
+            casillas.add(casillaSeguro2);
             numCasilla = numCasilla + 5;
+
+            i++;
 
         }
 
     }
 
     /**
-     * Añade un jugador al vector {@link #jugadores} siempre que no esté completo.
+     * Añade un jugador al vector {@link #jugadores} siempre que no estén los
+     * jugadores necesarios. Si ya existe un jugador con el mismo color, este se
+     * reemplazará con el nuevo jugador.
      * 
-     * @param jugador {@link Jugador} a añadir.
-     * @return {@link Message} que describe el procedimiento hecho.
+     * @param jugador {@link Jugador} a añadir o reemplazar.
+     * @return {@code true} si se añadió o reemplazó el jugador, {@code false} si ya
+     *         están los jugadores necesarios.
      */
-    public Message addJugador(Jugador jugador) {
+    public boolean addJugador(Jugador jugador) {
 
-        // si el vector está lleno
-        if (jugadores.size() == numJugadores) {
-            return new Message(Type.ERROR, "No es posible añadir más jugadores");
+        Color color = jugador.getColor();
+        int idx = colors.indexOf(color);
+
+        // si ya existe un jugador con el mismo color se reemplaza
+        if (jugadores[idx] != null) {
+
+            Jugador.setNumFichas(numFichasPorJugador);
+            jugadores[idx] = jugador;
+            return true;
+
         }
 
-        jugadores.add(jugador);
-        return new Message(Type.SUCCESS, String.format("Jugador añadido en la posición %d", jugadores.size()));
+        // si aún faltan jugadores por añadir
+        if (numJugadoresAñadidos < numJugadores) {
+
+            Jugador.setNumFichas(numFichasPorJugador);
+            jugadores[idx] = jugador;
+            numJugadoresAñadidos++;
+            return true;
+
+        }
+
+        // si no se puede añadir más jugadores.
+        return false;
 
     }
 
@@ -156,19 +213,31 @@ public class Tablero {
      * no hace nada.
      * 
      * @param jugador {@link Jugador} a eliminar del vector {@link #jugadores}.
-     * @return {@link Message} que describe el procedimiento hecho.
+     * @return {@code true} si existía el jugador y se eliminó, {@code false} de lo
+     *         contrario.
      */
-    public Message removerJugador(Jugador jugador) {
+    public boolean removerJugador(Jugador jugador) {
 
-        int i = jugadores.indexOf(jugador);
+        int i;
+        Jugador j;
 
-        // si el jugador no existe
-        if (i == -1) {
-            return new Message(Type.ERROR, String.format("No existe el jugador con nombre %s", jugador.getNombre()));
+        for (i = 0; i < numJugadores; i++) {
+
+            j = jugadores[i];
+
+            // si el jugador sí existe, se elimina
+            if (j == jugador) {
+
+                jugadores[i] = null;
+                numJugadoresAñadidos--;
+                return true;
+
+            }
+
         }
 
-        jugadores.remove(i);
-        return new Message(Type.SUCCESS, String.format("Jugador eliminado de la posición %d", i));
+        // si el jugador no existe
+        return false;
 
     }
 
@@ -180,12 +249,12 @@ public class Tablero {
      */
     public void iniciarTablero() {
 
-        assert (jugadores.size() == numJugadores) : "Asigne todos los jugadores de la partida.";
+        assert (numJugadoresAñadidos == numJugadores) : "Asigne todos los jugadores de la partida.";
 
         assert (casillas.size() > 0) : "Primero construya el tablero";
 
         // el primer turno para el primer jugador
-        jugadorActual = jugadores.get(0);
+        jugadorActual = jugadores[0];
         estado = Estado.EnJuego;
 
     }
@@ -196,12 +265,14 @@ public class Tablero {
         estado = Estado.NoIniciado;
 
         for (Casilla c : casillas) {
-
+            
             for (Ficha f : c.getFichas()) {
 
-                f.mover(f.getJugadorPadre().getCarcel());
+                f.getCarcel().insertarFicha(f);
 
             }
+
+            c.removerTodasLasFichas();
 
         }
 
@@ -224,17 +295,22 @@ public class Tablero {
      * 
      * @param f La ficha a mover.
      * @param c La casilla a la que se quiere mover la ficha.
-     * @return
+     * @return {@code true} si se pudo mover la ficha, {@code false} de lo
+     *         contrario.
      */
-    public Message moverFicha(Ficha f, Casilla c) {
+    public boolean moverFicha(Ficha f, Casilla c) {
+
+        if (c == null) {
+            return false;
+        }
 
         switch (c.getTipoCasilla()) {
             case SEGURO:
 
-                for (Ficha fichasOponente : c.getFichas()) {
+                for (Ficha fichaOponente : c.getFichas()) {
 
-                    if (fichasOponente.getColor() != f.getColor()) {
-                        fichasOponente.encarcelar();
+                    if (fichaOponente.getColor() != f.getColor()) {
+                        fichaOponente.encarcelar();
                     }
 
                 }
@@ -268,7 +344,9 @@ public class Tablero {
                 break;
         }
 
-        return f.mover(c);
+        f.getCasilla().removerFicha(f);
+        c.insertarFicha(f);
+        return true;
 
     }
 
@@ -284,15 +362,25 @@ public class Tablero {
      * @return {@link Casilla} siguiente si se mueve la ficha en <b>n</b>
      *         posiciones.
      */
-    public Casilla siguienteCasillaEspecial(Ficha f, int n) {
+    public Casilla siguienteCasillaEspecial(Ficha f) {
 
         Casilla casillaActual, casillaSiguiente;
         casillaActual = f.getCasilla();
-        int idxNextCasilla, numNecesario;
+        int idxNextCasilla, numNecesario, sumDados;
+
+        sumDados = dado0.getValor() + dado1.getValor();
+
+        // si la casilla actual es la CARCEL se retornará la casilla SALIDA si los dados
+        // forman un par
+        if (f.getCasilla() == f.getCarcel() && dado0.getValor() == dado1.getValor()) {
+            idxNextCasilla = colors.indexOf(f.getColor());
+            idxNextCasilla = idxNextCasilla * 3 + 1;
+            return casillas.get(idxNextCasilla);
+        }
 
         idxNextCasilla = casillas.indexOf(casillaActual);
 
-        if (n > 8) {
+        if (sumDados > 8) {
 
             // se comprueba la casilla más alejada
             idxNextCasilla = idxNextCasilla + 2;
@@ -302,26 +390,26 @@ public class Tablero {
             // ficha, por ende no es posible moverse a esa casilla porque la siguiente
             // casilla es la ENTRADA
             if (casillaSiguiente.getTipoCasilla() == TipoCasilla.SALIDA
-                    && f.getJugadorPadre() == casillaActual.getJugadorPadre()) {
+                    && f.getColor() == casillaActual.getColor()) {
 
                 return null;
 
             }
 
-        } else { // n <= 8
+        } else { // sumDados <= 8
 
             // se comprueba la casilla más cercana
             idxNextCasilla = idxNextCasilla + 1;
             casillaSiguiente = casillas.get(idxNextCasilla);
 
-            // se comprueba si el movimiento conduce a la entrada del jugador al que
-            // pertenece la ficha, o sea, si la siguiente casilla es de tipo SALIDA, la
-            // casilla actual es del mismo jugador que la casilla siguiente y el movimiento
-            // con n es válido
+            // se comprueba si el movimiento conduce a la entrada del mismo color que la
+            // ficha, o sea, si la siguiente casilla es de tipo SALIDA, laficha actual es
+            // del mismo color que la casilla siguiente y el movimiento con los dados es
+            // válido
             if (casillaSiguiente.getTipoCasilla() == TipoCasilla.SALIDA
-                    && f.getJugadorPadre() == casillaActual.getJugadorPadre() && n == 8) {
+                    && f.getColor() == casillaActual.getColor() && sumDados == 8) {
 
-                return f.getJugadorPadre().getEntrada();
+                return f.getEntrada();
 
             }
 
@@ -331,7 +419,7 @@ public class Tablero {
         // siguiente casilla especial usando sus id's de casilla
         numNecesario = casillaSiguiente.getIdCasilla() - casillaActual.getIdCasilla();
         numNecesario = numNecesario % 17;
-        if (n == numNecesario) {
+        if (sumDados == numNecesario) {
             return casillaSiguiente;
         }
 
@@ -341,19 +429,16 @@ public class Tablero {
     }
 
     /**
-     * Tira los dos dados y retorna su suma.
-     * 
-     * @return Suma de los dos dados.
+     * Tira los dos dados.
      */
-    public int tirarDados() {
+    public void tirarDados() {
 
         dado0.tirar();
         dado1.tirar();
-        return dado0.getValor() + dado1.getValor();
 
     }
 
-    public ArrayList<Jugador> getJugadores() {
+    public Jugador[] getJugadores() {
         return jugadores;
     }
 
@@ -381,14 +466,34 @@ public class Tablero {
         return dado1.getValor();
     }
 
-    public Estado isTableroEnJuego() {
+    public Estado getEstado() {
         return estado;
     }
 
-}
+    public void draw() {
 
-enum Estado {
-    NoIniciado,
-    EnJuego,
-    Finalizado,
+        GraphicsContext gc = getGraphicsContext2D();
+
+        double min = Math.min(getWidth(), getHeight());
+
+        gc.clearRect(0, 0, getWidth(), getHeight());
+        gc.drawImage(background, 0, 0, min, min);
+
+        for (Casilla c : casillas) {
+
+            c.drawFichas(gc);
+
+        }
+
+        for (Jugador j : jugadores) {
+
+            if (j != null) {
+                j.getCarcel().drawFichas(gc);
+                j.getEntrada().drawFichas(gc);
+            }
+
+        }
+
+    }
+
 }
