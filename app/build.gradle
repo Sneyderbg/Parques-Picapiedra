@@ -5,8 +5,14 @@ plugins {
   id 'org.beryx.jlink' version '2.25.0'
 }
 
+compileJava.options.encoding = 'UTF-8'
+
 repositories {
     mavenCentral()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 javafx {
@@ -27,6 +33,12 @@ ext {
     appMainClass = "app.App"
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'app.App'
+    }
+}
+
 jlink {
     imageZip = project.file("${buildDir}/distributions/${appPackaging}-${javafx.platform.classifier}.zip")
     options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
@@ -40,11 +52,6 @@ task dist {
     description "Calls clean and then jlinkZip [default]"
 }
 
-compileJava.options.encoding = 'UTF-8'
-
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
-}
 
 if (project.hasProperty('debugRun') && project.debugRun as boolean) {
     run {
