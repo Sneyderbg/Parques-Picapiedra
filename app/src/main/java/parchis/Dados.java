@@ -4,7 +4,6 @@ import java.util.Random;
 
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
-import javafx.event.ActionEvent;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;

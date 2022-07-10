@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -32,9 +31,9 @@ import util.Coords;
 
 public class WindowController implements Initializable {
 
+    private final boolean DEBUGGING = false;
     private Tablero tablero;
     private int choosenPlayers;
-    private boolean debugging;
     private Image dadosImage;
 
     @FXML
@@ -76,9 +75,6 @@ public class WindowController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        debugging = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().toString()
-                .indexOf("-agentlib:jdwp") > 0;
-
         // se añaden las opciones para elegir el número de fichas por jugador
         nPawnsComboBox.getItems().addAll(2, 3, 4);
 
@@ -86,7 +82,7 @@ public class WindowController implements Initializable {
         dado0ImageView.setImage(dadosImage);
         dado1ImageView.setImage(dadosImage);
 
-        if (debugging) {
+        if (DEBUGGING) {
 
             customDadosTextField.setVisible(true);
 
@@ -247,7 +243,7 @@ public class WindowController implements Initializable {
             return;
         }
 
-        if (debugging) {
+        if (DEBUGGING) {
 
             if (customDadosTextField.getText() == null || customDadosTextField.getText().length() == 0) {
 
@@ -273,7 +269,7 @@ public class WindowController implements Initializable {
         if (tablero == null || tablero.getEstado() == Estado.NO_INICIADO) {
 
             return;
-            
+
         }
 
         tablero.soplar();
@@ -281,7 +277,7 @@ public class WindowController implements Initializable {
     }
 
     @FXML
-    void newGameEvt(Event evt) {
+    void newGameEvt(ActionEvent evt) {
 
         // se oculta el canvas de dibujo
         drawingCanvas.setVisible(false);
@@ -291,7 +287,12 @@ public class WindowController implements Initializable {
 
         choosenPlayers = 0;
 
-        if (debugging) {
+        clearEvt(evt);
+
+        infoLabel.setText("Aquí se mostrará información sobre el juego.");
+        nextPlayerLabel.setText("Aquí se mostrará el turno");
+
+        if (DEBUGGING) {
 
             nPawnsComboBox.setValue(4);
 
@@ -320,6 +321,7 @@ public class WindowController implements Initializable {
 
             }
         }
+
     }
 
     @FXML

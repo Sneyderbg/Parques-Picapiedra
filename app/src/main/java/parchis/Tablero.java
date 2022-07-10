@@ -667,6 +667,7 @@ public class Tablero extends Thread {
         jugadorAnterior = null;
         jugadorActual = null;
         estado = Estado.NO_INICIADO;
+        tipoDeMovimiento = null;
 
         rollCount = 0;
         pairsInARow = 0;
@@ -693,11 +694,14 @@ public class Tablero extends Thread {
 
         }
 
+        infoLabel.setText("Aquí se mostrará información sobre el juego.");
+        nextPlayerLabel.setText("Aquí se mostrará el turno");
+
     }
 
     public void finalizarTablero() {
 
-        estado = Estado.NO_INICIADO;
+        estado = Estado.FINALIZADO;
         tipoDeMovimiento = null;
 
     }
