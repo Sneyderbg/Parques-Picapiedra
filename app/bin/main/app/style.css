@@ -1,0 +1,135 @@
+.pane {
+
+    -fx-background-color: #444444;
+
+}
+
+.HBox {
+
+    -fx-alignment: center;
+    -fx-padding: 10 10 10 10;
+    -fx-spacing: 10;
+
+}
+
+.VBox {
+
+    -fx-alignment: center;
+    -fx-padding: 10 10 10 10;
+    -fx-spacing: 10;
+
+}
+
+.chooseHBox {
+
+    -fx-alignment: center;
+    -fx-padding: 10 10 10 10;
+    -fx-spacing: 20;
+
+}
+
+#choosePlayersPane {
+
+    -fx-hgap: 10;
+    -fx-vgap: 10;
+
+}
+
+.comboBox {
+
+    -fx-background-color: rgb(157, 157, 157);
+    -fx-background-radius: 4px;
+    -fx-border-color: white;
+    -fx-border-width: 3px;
+    -fx-border-radius: 4px;
+    -fx-cursor: hand;
+    -fx-width: fit-content;
+
+}
+
+.button {
+
+    -fx-background-color: aqua;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+
+}
+
+.label {
+
+    -fx-background-radius: 5px;
+    -fx-width: fit-content;
+    -fx-padding: 4 4 4 4;
+    -fx-border-color: white;
+    -fx-border-width: 4px;
+    -fx-border-radius: 50%;
+    -fx-text-fill: white;
+
+}
+
+.infoLabel {
+
+    -fx-background-color: lightgrey;
+    -fx-background-radius: 10px;
+    -fx-text-fill: black;
+    -fx-border-radius: 1px;
+
+}
+
+.chooseCheckBox {
+
+    -fx-opacity: 0.6;
+    -fx-disable: checked;
+
+}
+
+.playerHBox {
+
+    -fx-background-radius: 8px;
+    -fx-border-color: white;
+    -fx-border-width: 5px;
+    -fx-border-radius: 5px;
+}
+
+#greenHBox {
+
+    -fx-background-color: green;
+
+}
+
+#orangeHBox {
+
+    -fx-background-color: coral;
+
+}
+
+#purpleHBox {
+
+    -fx-background-color: blueviolet;
+
+}
+
+#redHBox {
+
+    -fx-background-color: red;
+
+}
+
+#yellowHBox {
+
+    -fx-background-color: yellow;
+
+}
+
+#blueHBox {
+
+    -fx-background-color: blue;
+
+}
+
+.textField {
+
+    -fx-background-color: black;
+    -fx-text-fill: white;
+
+}

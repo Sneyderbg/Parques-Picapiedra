@@ -1,6 +1,8 @@
 package parchis;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import javafx.scene.paint.Color;
 
@@ -21,7 +23,27 @@ public class Jugador {
     private Color color;
 
     /**
-     * Número de fichas para cualquier Jugador.
+     * Última tirada de dados.
+     */
+    private int lastRoll;
+
+    /**
+     * Determina si este jugador pudo enviar a la cárcel a algún oponente en su
+     * anterior jugada, independientemente si envió o no a algún oponente a la
+     * cárcel.
+     */
+    private boolean pudoEnviarACarcel;
+
+    /**
+     * Determina si este jugador envió a algún oponente a la cárcel en su anterior
+     * jugada.
+     */
+    private boolean envioACarcel;
+
+    private boolean soploJugadaAnterior;
+
+    /**
+     * Número de fichas para cualquier instancia de la clase Jugador.
      */
     private static int numFichas;
 
@@ -34,34 +56,35 @@ public class Jugador {
      * Casilla que representa la cárcel (en donde las fichas están inicialmente), de
      * este Jugador.
      */
-    private Casilla carcel;
+    private CasillaEspecial carcel;
+
+    private CasillaEspecial salida;
 
     /**
      * Casilla que representa la entrada al cielo (a donde las fichas deben llegar),
      * de
      * este Jugador.
      */
-    private Casilla entrada;
-
-    /**
-     * Describe si este jugador es el ganador.
-     */
-    private boolean ganador;
-
-    private boolean puedeEnviarACarcel;
+    private CasillaEspecial entrada;
 
     /**
      * Constructor. Crea un jugador con los parámetros dados.
      * 
-     * @param nombre    Nombre del Jugador.
-     * @param color     {@link Color} del Jugador, de sus Fichas y sus Casillas.
+     * @param nombre Nombre del Jugador.
+     * @param color  {@link Color} del Jugador, de sus Fichas y sus Casillas.
      */
     public Jugador(String nombre, Color color) {
 
         this.nombre = nombre;
         this.color = color;
-        this.ganador = false;
-        this.puedeEnviarACarcel = false;
+        this.lastRoll = 0;
+        this.pudoEnviarACarcel = false;
+        this.envioACarcel = false;
+        this.soploJugadaAnterior = false;
+
+        this.carcel = null;
+        this.salida = null;
+        this.entrada = null;
 
     }
 
@@ -72,7 +95,7 @@ public class Jugador {
     public void crearFichas() {
 
         assert (numFichas >= 2);
-        
+
         assert (getCarcel() != null && getEntrada() != null)
                 : "Se debe asignar tanto la casilla carcel, como la casilla entrada de este jugador";
 
@@ -107,50 +130,118 @@ public class Jugador {
      * 
      * @param numFichas Número de fichas que tendrá cada jugador.
      */
-    public static void setNumFichas(int numFichas) {
+    public static void setNumFichas(final int numFichas) {
         Jugador.numFichas = numFichas;
+    }
+
+    public static int getNumFichas() {
+        return numFichas;
+    }
+
+    /**
+     * Establece la {@link CasillaEspecial} de tipo CARCEL que le corresponde a este
+     * Jugador.
+     * 
+     * @param carcel {@link CasillaEspecial} CARCEL de este Jugador.
+     */
+    public void setCarcel(CasillaEspecial carcel) {
+        this.carcel = carcel;
+    }
+
+    /**
+     * Retorna el vector fichas de este Jugador.
+     * 
+     * @return {@link #fichas}.
+     */
+    public ArrayList<Ficha> getFichas() {
+        return fichas;
     }
 
     /**
      * Retorna la casilla cárcel de este Jugador.
      * 
-     * @return {@link Casilla} cárcel.
+     * @return {@link CasillaEspecial} cárcel.
      */
-    public Casilla getCarcel() {
+    public CasillaEspecial getCarcel() {
         return carcel;
+    }
+
+    public boolean isCarcelLlena() {
+
+        return getCarcel().size() == numFichas;
+
+    }
+
+    /**
+     * Establece la {@link CasillaEspecial} de tipo ENTRADA que le corresponde a
+     * este Jugador.
+     * 
+     * @param entrada {@link CasillaEspecial} ENTRADA de este Jugador.
+     */
+    public void setEntrada(CasillaEspecial entrada) {
+        this.entrada = entrada;
     }
 
     /**
      * Retorna la casilla entrada de este Jugador.
      * 
-     * @return {@link Casilla} entrada.
+     * @return {@link CasillaEspecial} entrada.
      */
-    public Casilla getEntrada() {
+    public CasillaEspecial getEntrada() {
         return entrada;
     }
 
-    public void setGanador(boolean ganador) {
-        this.ganador = ganador;
+    public boolean isEntradaLlena() {
+
+        return getEntrada().size() == numFichas;
+
     }
 
-    public boolean isGanador() {
-        return ganador;
+    public void setSalida(CasillaEspecial salida) {
+        this.salida = salida;
     }
 
-    public void setPuedeEnviarACarcel(boolean puedeEnviarACarcel) {
-        this.puedeEnviarACarcel = puedeEnviarACarcel;
+    public CasillaEspecial getSalida() {
+        return salida;
     }
 
-    public boolean puedeEnviarACarcel() {
-        return this.puedeEnviarACarcel;
+    public void setLastRoll(int lastRoll) {
+        this.lastRoll = lastRoll;
     }
 
-    public void setCarcel(Casilla carcel) {
-        this.carcel = carcel;
+    public int getLastRoll() {
+        return lastRoll;
     }
 
-    public void setEntrada(Casilla entrada) {
-        this.entrada = entrada;
+    public void setPudoEnviarACarcel(boolean pudoEnviarACarcel) {
+        this.pudoEnviarACarcel = pudoEnviarACarcel;
+    }
+
+    public boolean pudoEnviarACarcel() {
+        return pudoEnviarACarcel;
+    }
+
+    public void setEnvioACarcel(boolean envioACarcel) {
+        this.envioACarcel = envioACarcel;
+    }
+
+    public boolean envioACarcel() {
+        return envioACarcel;
+    }
+
+    public void setSoploJugadaAnterior(boolean soploJugadaAnterior) {
+        this.soploJugadaAnterior = soploJugadaAnterior;
+    }
+
+    public boolean soploJugadaAnterior() {
+        return soploJugadaAnterior;
+    }
+
+    @Override
+    public String toString() {
+
+        return String.format("Jugador %s, %s", getColor().toString(), getNombre());
+
     }
 
 }

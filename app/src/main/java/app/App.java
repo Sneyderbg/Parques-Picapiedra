@@ -18,7 +18,7 @@ public class App extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("window.fxml"));
 
         Scene scene = new Scene(root);
-        
+
         primaryStage.setTitle("Parqués");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -34,8 +34,8 @@ public class App extends Application {
     }
 
     private Bounds getPrefBounds(Node node) {
-        double prefWidth ;
-        double prefHeight ;
+        double prefWidth;
+        double prefHeight;
 
         Orientation bias = node.getContentBias();
         if (bias == Orientation.HORIZONTAL) {
@@ -56,5 +56,5 @@ public class App extends Application {
         App.launch(args);
 
     }
-    
+
 }
