@@ -185,8 +185,8 @@ public class Dados extends Transition {
         // cada 100 ms randomiza los dados, y actualiza sus sprites.
         if (elapsedMillis > 100) {
 
-            valor0 = rand.nextInt(5) + 1;
-            valor1 = rand.nextInt(5) + 1;
+            valor0 = rand.nextInt(6) + 1;
+            valor1 = rand.nextInt(6) + 1;
             updateSprites();
             lastUpdate = System.currentTimeMillis();
 
