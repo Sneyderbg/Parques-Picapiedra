@@ -4,7 +4,7 @@ Esta es una recreación del Parqués Picapiedra, variación del Parqués Colombi
 
 ### Reglas básicas:
 
-- ¡POR RELLENAR!
+- ¡POR RELLENAR! 
 
 ### Reglas específicas:
 

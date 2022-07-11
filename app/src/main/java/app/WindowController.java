@@ -31,7 +31,7 @@ import util.Coords;
 
 public class WindowController implements Initializable {
 
-    private final boolean DEBUGGING = false;
+    private final boolean DEBUGGING = true;
     private Tablero tablero;
     private int choosenPlayers;
     private Image dadosImage;
@@ -466,9 +466,8 @@ public class WindowController implements Initializable {
             if (playerCheckBox.isSelected()
                     && (playerTextField.getText() == null || playerTextField.getText().trim().length() == 0)) {
 
-                warningAlert.setHeaderText("Invalid name of player");
-                warningAlert.setContentText(
-                        String.format("The %s player must have a valid name"));
+                warningAlert.setHeaderText("Nombre de jugadores no válidos.");
+                warningAlert.setContentText("Los jugadores deben tener nombres válidos.");
                 warningAlert.showAndWait();
                 return false;
 

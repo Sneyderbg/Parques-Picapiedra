@@ -21,16 +21,9 @@ public class Jugador {
     private Color color;
 
     /**
-     * Última tirada de dados.
+     * Contiene el último número que sacó este jugador al tirar los dados.
      */
     private int lastRoll;
-
-    /**
-     * Determina si este jugador pudo enviar a la cárcel a algún oponente en su
-     * anterior jugada, independientemente si envió o no a algún oponente a la
-     * cárcel.
-     */
-    private boolean pudoEnviarACarcel;
 
     /**
      * Determina si este jugador envió a algún oponente a la cárcel en su anterior
@@ -38,12 +31,15 @@ public class Jugador {
      */
     private boolean envioACarcel;
 
+    /**
+     * Determina si este jugador ya sopló al jugador anterior, en el turno actual.
+     */
     private boolean soploJugadaAnterior;
 
     /**
      * Número de fichas para cualquier instancia de la clase Jugador.
      */
-    private static int numFichas;
+    private int numFichas;
 
     /**
      * Vector que contiene las fichas pertenecientes a este Jugador.
@@ -56,12 +52,14 @@ public class Jugador {
      */
     private CasillaEspecial carcel;
 
+    /**
+     * Casilla que representa la salida que pertenece a este Jugador.
+     */
     private CasillaEspecial salida;
 
     /**
      * Casilla que representa la entrada al cielo (a donde las fichas deben llegar),
-     * de
-     * este Jugador.
+     * de este Jugador.
      */
     private CasillaEspecial entrada;
 
@@ -76,7 +74,6 @@ public class Jugador {
         this.nombre = nombre;
         this.color = color;
         this.lastRoll = 0;
-        this.pudoEnviarACarcel = false;
         this.envioACarcel = false;
         this.soploJugadaAnterior = false;
 
@@ -87,20 +84,23 @@ public class Jugador {
     }
 
     /**
-     * Crea <i>n</i> fichas para este Jugador, donde <i>n</i> está descrito en
-     * {@link #numFichas}.
+     * Crea <i>n</i> fichas para este Jugador, donde <i>n</i> es {@link #numFichas}.
      */
     public void crearFichas() {
 
-        assert (numFichas >= 2);
+        // minimo 1 ficha
+        assert (numFichas > 0) : "el mínimo de fichas debe ser 1.";
 
-        assert (getCarcel() != null && getEntrada() != null)
-                : "Se debe asignar tanto la casilla carcel, como la casilla entrada de este jugador";
+        assert (getCarcel() != null && getEntrada() != null && getSalida() != null)
+                : "se debe asignar todas las casillas relacionadas a este jugador.";
 
         fichas = new ArrayList<Ficha>();
+        Ficha f;
 
+        // Se crean las ficha y se insertan en la carcel
         for (int i = 0; i < numFichas; i++) {
-            fichas.add(new Ficha(this)); // Se crea cada ficha y se insertan en la carcel
+            f = new Ficha(this);
+            fichas.add(f);
         }
 
     }
@@ -128,11 +128,16 @@ public class Jugador {
      * 
      * @param numFichas Número de fichas que tendrá cada jugador.
      */
-    public static void setNumFichas(final int numFichas) {
-        Jugador.numFichas = numFichas;
+    public void setNumFichas(final int numFichas) {
+        this.numFichas = numFichas;
     }
 
-    public static int getNumFichas() {
+    /**
+     * Retorna el número de fichas de este Jugador.
+     * 
+     * @return {@link #numFichas}.
+     */
+    public int getNumFichas() {
         return numFichas;
     }
 
@@ -164,9 +169,16 @@ public class Jugador {
         return carcel;
     }
 
+    /**
+     * Combrueba si la casilla {@link #carcel} contiene <i>n</i> fichas, donde
+     * <i>n</i> es {@link #numFichas}.
+     * 
+     * @return {@code true} si la cárcel contiene {@code numFichas}, {@code false}
+     *         de lo contrario.
+     */
     public boolean isCarcelLlena() {
 
-        return getCarcel().size() == numFichas;
+        return getCarcel().length() == numFichas;
 
     }
 
@@ -189,48 +201,89 @@ public class Jugador {
         return entrada;
     }
 
+    /**
+     * Comprueba si la casilla {@link #entrada} contiene <i>n</i> fichas donde
+     * <i>n</i> es {@link #numFichas}.
+     * 
+     * @return {@code true} si la entrada contiene {@code numFichas}, {@code false}
+     *         de lo contrario.
+     */
     public boolean isEntradaLlena() {
 
-        return getEntrada().size() == numFichas;
+        return getEntrada().length() == numFichas;
 
     }
 
+    /**
+     * Establece la {@link CasillaEspecial} de tipo SALIDA que le corresponde a este
+     * Jugador.
+     * 
+     * @param salida {@link CasillaEspecial} SALIDA de este Jugador.
+     */
     public void setSalida(CasillaEspecial salida) {
         this.salida = salida;
     }
 
+    /**
+     * Retorna la {@link CasillaEspecial} SALIDA de este Jugador.
+     * 
+     * @return {@link #salida}.
+     */
     public CasillaEspecial getSalida() {
         return salida;
     }
 
+    /**
+     * Establece el último número que sacó este Jugador.
+     * 
+     * @param lastRoll Último número sacado al tirar los dados.
+     */
     public void setLastRoll(int lastRoll) {
         this.lastRoll = lastRoll;
     }
 
+    /**
+     * Retorna el último número que sacó este Jugador.
+     * 
+     * @return Último número sacado al tirar los dados.
+     */
     public int getLastRoll() {
         return lastRoll;
     }
 
-    public void setPudoEnviarACarcel(boolean pudoEnviarACarcel) {
-        this.pudoEnviarACarcel = pudoEnviarACarcel;
-    }
-
-    public boolean pudoEnviarACarcel() {
-        return pudoEnviarACarcel;
-    }
-
+    /**
+     * Cambia la variable {@link #envioACarcel}.
+     * 
+     * @param envioACarcel valor.
+     */
     public void setEnvioACarcel(boolean envioACarcel) {
         this.envioACarcel = envioACarcel;
     }
 
+    /**
+     * Retorna la variable {@link #envioACarcel}.
+     * 
+     * @return {@code true} si este jugador envió a algún oponente a la cárcel en su
+     *         jugada anterior, {@code false} de lo contrario.
+     */
     public boolean envioACarcel() {
         return envioACarcel;
     }
 
+    /**
+     * Cambia la variable {@link #soploJugadaAnterior}.
+     * 
+     * @param soploJugadaAnterior valor.
+     */
     public void setSoploJugadaAnterior(boolean soploJugadaAnterior) {
         this.soploJugadaAnterior = soploJugadaAnterior;
     }
 
+    /**
+     * Retorna la variable {@link #soploJugadaAnterior}.
+     * 
+     * @return {@code true} si este jugador ya sopló cuando tenía su turno.
+     */
     public boolean soploJugadaAnterior() {
         return soploJugadaAnterior;
     }
@@ -238,7 +291,7 @@ public class Jugador {
     @Override
     public String toString() {
 
-        return String.format("Jugador %s, %s", getColor().toString(), getNombre());
+        return String.format("Jugador[%s, %s]", getColor().toString(), getNombre());
 
     }
 

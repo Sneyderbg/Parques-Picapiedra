@@ -15,6 +15,10 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+javadoc{
+    options.encoding = 'UTF-8'
+}
+
 javafx {
     version = "18.0.1"
     modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.graphics']

@@ -14,12 +14,40 @@ import parchis.CasillaEspecial.TipoCasilla;
 
 public class Tablero extends Thread {
 
+    /**
+     * Describe en que estado está el tablero, o el juego.
+     * Valores:
+     * <ul>
+     * <li>NO_INICIADO</li>
+     * <li>EN_JUEGO</li>
+     * <li>FINALIZADO</li>
+     * </ul>
+     */
     public enum Estado {
         NO_INICIADO,
         EN_JUEGO,
         FINALIZADO,
     }
 
+    /**
+     * Describe el movimiento que está haciendo el jugador actual.
+     * Valores:
+     * <ul>
+     * <li>ELIGIENDO_PRIMER_JUGADOR</li>: Se refiere a la ronda número 0, en donde
+     * se elije al primer jugador para empezar la primera ronda. Se elije el que
+     * mayor número saque al tirar los dados.</li>
+     * <li>PRIMERA_RONDA</li>: La primera ronda del juego, en la cual se tienen 3
+     * oportunidades de sacar par y liberar sus fichas.</li>
+     * <li>MOVIENDO_FICHA: Este es el movimiento más común y abundante en todo el
+     * juego. Este incluye el tirar los dados y mover una ficha.</li>
+     * <li>ENCARCELANDO_OPONENTE_ANTERIOR</li>: Si el jugador anterior al actual
+     * tuvo oportunidad de encarcelar a alguien y no lo hizo, se activará este
+     * estado, y se esperará a que el jugador actual elija una ficha del jugador
+     * anterior para encarcelarla.</li>
+     * <li>SACANDO_FICHA_DEL_JUEGO</li>: Se activa al sacar 3 pares seguidos, el
+     * jugador elige una ficha para llevarla a su entrada corresponde.</li>
+     * </ul>
+     */
     private enum TipoDeMovimiento {
 
         ELIGIENDO_PRIMER_JUGADOR,
@@ -41,16 +69,22 @@ public class Tablero extends Thread {
     private int numJugadoresAñadidos;
 
     /**
-     * Número de fichas con las los jugadores van a jugar.
+     * Número de fichas con las que los jugadores van a jugar.
      */
     private final int numFichasPorJugador;
 
+    /**
+     * Jugador inicial el cual empezará cuando inicie la primera ronda.
+     */
     private Jugador primerJugador;
 
+    /**
+     * Jugador que tuvo el turno anterior al jugador actual.
+     */
     private Jugador jugadorAnterior;
 
     /**
-     * Esta variable guarda el jugador que actualmente tiene el turno para jugar.
+     * Jugador que tiene el turno actual.
      */
     private Jugador jugadorActual;
 
@@ -60,9 +94,8 @@ public class Tablero extends Thread {
     private Jugador jugadorGanador;
 
     /**
-     * Vector de jugadores del tablero.
-     * 
-     * @see {@link Jugador}
+     * Vector de jugadores del tablero. Ya que el tablero tiene 6 colores, este
+     * vector es de tamaño 6, los jugadores no nulos son los que juegan.
      */
     private Jugador jugadores[];
 
@@ -72,13 +105,12 @@ public class Tablero extends Thread {
      * <p>
      * Este vector no contiene ni las cárceles ni las entradas, ya que solo pasan
      * por ellas las fichas que tiene el mismo color que ellas.
-     * 
-     * @see {@link CasillaEspecial}
      */
     private ArrayList<CasillaEspecial> casillas;
 
     /**
-     * Colores a usar según la imagen "parchis6.png", en sentido antihorario.
+     * Colores a usar según la imagen "resources/parchis/parchis6.png", en sentido
+     * antihorario.
      */
     private static ArrayList<Color> colors;
 
@@ -94,20 +126,51 @@ public class Tablero extends Thread {
      */
     private Estado estado;
 
+    /**
+     * Controla que movimiento está haciendo el jugador actual.
+     */
     private TipoDeMovimiento tipoDeMovimiento;
 
+    /**
+     * Controla el número de veces que se han tirado los dados. Útil al elegir el
+     * primer jugador, y al jugar la primera ronda.
+     */
     private int rollCount;
 
+    /**
+     * Contador para el número de pares seguidos que saqué un jugador. Se reinicia
+     * al sacar los 3 pares o al cambiar de turno.
+     */
     private int pairsInARow;
 
+    /**
+     * Controla si es necesario tirar los dados para continuar el juego.
+     */
+    private boolean waitForTirarDados;
+
+    /**
+     * Controla si es necesario presionar una casilla para continuar el juego.
+     */
+    private boolean waitForPresionarCasilla;
+
+    /**
+     * Imagen que contiene los sprites (estados) de los dados.
+     */
     private final Image background;
 
-    private boolean waitForTirarDados, waitForPresionarCasilla;
-
+    /**
+     * Canvas donde se dibujan el tablero y las fichas.
+     */
     private final Canvas drawingCanvas;
 
+    /**
+     * Label para dar información para continuar el juego.
+     */
     private final Label infoLabel;
 
+    /**
+     * Label para dar información acerca del turno actual.
+     */
     private final Label nextPlayerLabel;
 
     /**
@@ -119,6 +182,11 @@ public class Tablero extends Thread {
      * 
      * @param numJugadores        Número de jugadores que van a jugar.
      * @param numFichasPorJugador Número de fichas que tendrá cada jugador.
+     * @param drawingCanvas       Canvas en el cual se dibuja.
+     * @param dado0ImageView      ImageView para mostrar el primer dado.
+     * @param dado1ImageView      ImageView para mostrar el segundo dado.
+     * @param infoLabel           Label para dar información del juego.
+     * @param nextPlayerLabel     Label para mostrar el jugador con el turno actual.
      */
     public Tablero(int numJugadores, int numFichasPorJugador, Canvas drawingCanvas, ImageView dado0ImageView,
             ImageView dado1ImageView, Label infoLabel, Label nextPlayerLabel) {
@@ -156,6 +224,53 @@ public class Tablero extends Thread {
                     Color.GREEN, Color.ORANGE, Color.PURPLE, Color.RED, Color.YELLOW, Color.BLUE);
 
         }
+
+    }
+
+    /**
+     * Añade un jugador al vector {@link #jugadores} siempre que no estén los
+     * jugadores necesarios. Si ya existe un jugador con el mismo color, este se
+     * reemplazará con el nuevo jugador.
+     * <p>
+     * Si se añade al jugador, y este es el último, o sea,
+     * {@code numJugadoresAñadidos == numJugadores}, se invoca al método
+     * {@link #construirTablero()}.
+     * 
+     * @param jugador {@link Jugador} a añadir o reemplazar.
+     * @return {@code true} si se añadió o reemplazó el jugador, {@code false} si ya
+     *         están los jugadores necesarios.
+     */
+    public boolean addJugador(Jugador jugador) {
+
+        Color color = jugador.getColor();
+        int idx = colors.indexOf(color);
+
+        // si ya existe un jugador con el mismo color se reemplaza
+        if (jugadores[idx] != null) {
+
+            jugador.setNumFichas(numFichasPorJugador);
+            jugadores[idx] = jugador;
+            return true;
+
+        }
+
+        // si aún faltan jugadores por añadir
+        if (numJugadoresAñadidos < numJugadores) {
+
+            jugador.setNumFichas(numFichasPorJugador);
+            jugadores[idx] = jugador;
+            numJugadoresAñadidos++;
+
+            // si se añade el último jugador, se contruyen las casillas del tablero
+            if (numJugadoresAñadidos == numJugadores) {
+                construirTablero();
+            }
+            return true;
+
+        }
+
+        // si no se puede añadir más jugadores.
+        return false;
 
     }
 
@@ -234,53 +349,6 @@ public class Tablero extends Thread {
             i++;
 
         }
-
-    }
-
-    /**
-     * Añade un jugador al vector {@link #jugadores} siempre que no estén los
-     * jugadores necesarios. Si ya existe un jugador con el mismo color, este se
-     * reemplazará con el nuevo jugador.
-     * <p>
-     * Si se añade al jugador, y este es el último, o sea,
-     * {@code numJugadoresAñadidos == numJugadores}, se invoca al método
-     * {@link #construirTablero()}.
-     * 
-     * @param jugador {@link Jugador} a añadir o reemplazar.
-     * @return {@code true} si se añadió o reemplazó el jugador, {@code false} si ya
-     *         están los jugadores necesarios.
-     */
-    public boolean addJugador(Jugador jugador) {
-
-        Color color = jugador.getColor();
-        int idx = colors.indexOf(color);
-
-        // si ya existe un jugador con el mismo color se reemplaza
-        if (jugadores[idx] != null) {
-
-            Jugador.setNumFichas(numFichasPorJugador);
-            jugadores[idx] = jugador;
-            return true;
-
-        }
-
-        // si aún faltan jugadores por añadir
-        if (numJugadoresAñadidos < numJugadores) {
-
-            Jugador.setNumFichas(numFichasPorJugador);
-            jugadores[idx] = jugador;
-            numJugadoresAñadidos++;
-
-            // si se añade el último jugador, se contruyen las casillas del tablero
-            if (numJugadoresAñadidos == numJugadores) {
-                construirTablero();
-            }
-            return true;
-
-        }
-
-        // si no se puede añadir más jugadores.
-        return false;
 
     }
 
@@ -370,7 +438,7 @@ public class Tablero extends Thread {
      * @return {@code true} si se pudo mover la ficha, {@code false} de lo
      *         contrario.
      */
-    public boolean moverFicha(Ficha f, CasillaEspecial c) {
+    private boolean moverYEncarcelar(Ficha f, CasillaEspecial c) {
 
         boolean seEncarceloAlgunaFicha = false;
 
@@ -405,25 +473,36 @@ public class Tablero extends Thread {
                 }
                 break;
 
+            case ENTRADA:
+
+                // si la casilla entrada del jugador actual está llena, el juego termina.
+                if (jugadorActual.isEntradaLlena()) {
+
+                    jugadorGanador = jugadorActual;
+                    finalizarTablero();
+
+                }
+                break;
+
             default:
                 break;
         }
 
         // se mueve esta ficha de la casilla actual a la casilla 'c'
-        f.getCasilla().removerFicha(f);
-        c.insertarFicha(f);
-
-        if (jugadorActual.isEntradaLlena()) {
-
-            jugadorGanador = jugadorActual;
-            finalizarTablero();
-
-        }
+        f.getCasilla().moverFichaA(f, c);
 
         return true;
 
     }
 
+    /**
+     * Libera las fichas del jugador <b>j</b>, dicho de otro modo, mueve todas las
+     * fichas de la casilla CARCEL a la casilla SALIDA del jugador <b>j</b.
+     * 
+     * @param j Jugador al cual liberar sus fichas.
+     * @return {@code true} si se liberó alguna ficha, {@code false} de lo
+     *         contrario.
+     */
     private boolean liberarFichas(Jugador j) {
 
         CasillaEspecial casillaCarcel, casillaSalida;
@@ -431,7 +510,7 @@ public class Tablero extends Thread {
         casillaCarcel = j.getCarcel();
         casillaSalida = j.getSalida();
 
-        if (casillaCarcel.size() == 0) {
+        if (casillaCarcel.length() == 0) {
             return false;
         }
 
@@ -442,7 +521,7 @@ public class Tablero extends Thread {
         jugadorActual.setEnvioACarcel(seEncarceloAlgunaFicha);
 
         // se mueven todas las fichas de la carcel a la salida
-        casillaSalida.moverTodasLasFichasDe(casillaCarcel);
+        casillaCarcel.moverTodasLasFichasA(casillaSalida);
 
         return true;
 
@@ -459,7 +538,7 @@ public class Tablero extends Thread {
      * @return {@link CasillaEspecial} siguiente si se mueve la ficha en <b>n</b>
      *         posiciones.
      */
-    public CasillaEspecial siguienteCasillaEspecial(Ficha f) {
+    private CasillaEspecial siguienteCasillaEspecial(Ficha f) {
 
         CasillaEspecial casillaActual, casillaSiguiente;
         casillaActual = f.getCasilla();
@@ -473,7 +552,8 @@ public class Tablero extends Thread {
             return casillas.get(idxNextCasilla);
         }
 
-        if (f.getCarcel() == f.getEntrada()) {
+        // si la casilla actual es la ENTRADA, no hay casilla siguiente
+        if (f.getCasilla() == f.getEntrada()) {
 
             return null;
 
@@ -537,21 +617,32 @@ public class Tablero extends Thread {
     }
 
     /**
-     * Comprueba si el jugador actual puede enviar a algún oponente a la cárcel con
-     * cualquiera de sus fichas. Luego actualiza el campo
-     * {@link Jugador#pudoEnviarACarcel}.
+     * Comprueba si el jugador <b>j</b> puede enviar a algún oponente a la cárcel
+     * con cualquiera de sus fichas.
+     * 
+     * @param j Jugador a comprobar.
+     * @return {@code true} si el jugador <b>j</b> puede enviar a algún oponente a
+     *         la cárcel, {@code false} de lo contrario.
      */
-    public boolean checkPuedeEncarcelarOponentes() {
+    private boolean sePuedeSoplarA(Jugador j) {
 
         CasillaEspecial casillaSiguiente;
         Ficha f;
-        Iterator<Ficha> it = jugadorActual.getFichas().iterator();
+        Iterator<Ficha> it = j.getFichas().iterator();
 
+        // si j envió a la carcel a algún oponente, no se puede soplar a j
+        if (j.envioACarcel()) {
+            return false;
+        } // else: no envió a carcel a ningún oponente.
+
+        // se comprueba si podía comer con cualquier otra ficha
         while (it.hasNext()) {
 
             f = it.next();
             casillaSiguiente = siguienteCasillaEspecial(f);
-            if (casillaSiguiente != null && casillaSiguiente.contieneFichasOponentes(jugadorActual)) {
+
+            // si la ficha f podía moverse a la casillaSiguiente, y habían oponentes allí
+            if (casillaSiguiente != null && casillaSiguiente.contieneFichasOponentes(j)) {
 
                 return true;
 
@@ -571,14 +662,23 @@ public class Tablero extends Thread {
      * @return {@code true} si hay un posible movimiento por parte del jugador
      *         actual, {@code false} de lo contrario.
      */
-    public boolean posibleMovimiento() {
+    private boolean posibleMovimiento() {
 
         assert (jugadorActual != null) : "Jugador actual no asignado";
 
-        for (Ficha f : jugadorActual.getFichas()) {
+        Iterator<Ficha> it = jugadorActual.getFichas().iterator();
+        Ficha f;
 
+        // por cada ficha del jugador actual
+        while (it.hasNext()) {
+
+            f = it.next();
+
+            // si hay siguiente casilla con los dados actuales
             if (siguienteCasillaEspecial(f) != null) {
+
                 return true;
+
             }
 
         }
@@ -628,7 +728,6 @@ public class Tablero extends Thread {
     }
 
     public Dados getDados() {
-
         return dados;
     }
 
@@ -644,7 +743,7 @@ public class Tablero extends Thread {
      * Inicia el tablero siempre que estén todos los jugadores ya añadidos.
      * {@code numJugadoresAñadidos == numJugadores}.
      * 
-     * @see {@link #addJugador(Jugador)}
+     * @see #addJugador(Jugador)
      */
     public void iniciarTablero() {
 
@@ -666,8 +765,12 @@ public class Tablero extends Thread {
         jugadorGanador = null;
         jugadorAnterior = null;
         jugadorActual = null;
+
         estado = Estado.NO_INICIADO;
         tipoDeMovimiento = null;
+
+        waitForTirarDados = false;
+        waitForPresionarCasilla = false;
 
         rollCount = 0;
         pairsInARow = 0;
@@ -707,7 +810,42 @@ public class Tablero extends Thread {
     }
 
     /**
-     * Tira los dos dados y evalua el estado del tablero.
+     * Tira los dos dados y luego los evalua.
+     * <p>
+     * 
+     * @param values (For debugging purposes only). String con valores para
+     *               reemplazar los dados, de la forma <b><i>v0.v1</i></b> donde v0
+     *               y v1 son los valores a reemplazar en cada dado. Si es
+     *               {@code null}, los valores de los dados son aleatorios
+     *               (predeterminado).
+     */
+    public void tirarDados(String values) {
+
+        assert (numJugadoresAñadidos == numJugadores) : "Asigne todos los jugadores de la partida.";
+        assert (getEstado() == Estado.EN_JUEGO)
+                : "No se puede realizar ninguna acción si no se ha iniciado o reiniciado el tablero";
+
+        // si no se esperaba tirar los dados se cancela la operación
+        if (!waitForTirarDados) {
+
+            infoLabel.setText(infoLabel.getText() + "!!!");
+            return;
+
+        }
+
+        // se aumenta en 1 el conteo de tiradas.
+        rollCount++;
+
+        // se tiran los dados
+        dados.tirar();
+
+        // después de terminar la animación de los dados, se evaluan
+        dados.setOnFinished(evt -> evaluarDados(values));
+
+    }
+
+    /**
+     * Evalua los dados y el estado del juego.
      * <p>
      * Casos:
      * <ul>
@@ -728,35 +866,12 @@ public class Tablero extends Thread {
      * Los demás casos se controlan al presionar alguna casilla o al soplar al
      * oponente anterior.
      * 
-     * @param infoLabel          Label el cual se actualizará para dar información
-     *                           después de tirar los dados.
-     * @param currentPlayerLabel Label el cual se actualizará para dar información
-     *                           acerca del jugador actual.
-     * @see {@link #presionarCasilla(CasillaEspecial, Label, Label)}
+     * @param values (For debugging purposes only). String con valores para
+     *               reemplazar los dados, de la forma <b><i>v0.v1</i></b> donde v0
+     *               y v1 son los valores a reemplazar en cada dado. Si es
+     *               {@code null}, los valores de los dados son aleatorios
+     *               (predeterminado).
      */
-    public void tirarDados(String values) {
-
-        assert (numJugadoresAñadidos == numJugadores) : "Asigne todos los jugadores de la partida.";
-        assert (getEstado() == Estado.EN_JUEGO)
-                : "No se puede realizar ninguna acción si no se ha iniciado o reiniciado el tablero";
-
-        // si no se esperaba tirar los dados se cancela la operación
-        if (!waitForTirarDados) {
-
-            infoLabel.setText(infoLabel.getText() + "!!!");
-            return;
-
-        }
-
-        // se aumenta en 1 el conteo de tiradas.
-        rollCount++;
-
-        dados.tirar();
-
-        dados.setOnFinished(evt -> evaluarDados(values));
-
-    }
-
     private void evaluarDados(String values) {
 
         if (values != null) { // debug: se reemplazan los valores de los dados
@@ -921,8 +1036,6 @@ public class Tablero extends Thread {
 
                 } // else: hay al menos una ficha que se puede mover
 
-                jugadorActual.setPudoEnviarACarcel(checkPuedeEncarcelarOponentes());
-
                 // si saca par y todas las fichas están en la cárcel
                 if (pairsInARow > 0 && jugadorActual.isCarcelLlena()) {
 
@@ -957,11 +1070,25 @@ public class Tablero extends Thread {
      * <p>
      * Casos:
      * <ul>
-     * <li><b>PRIMERA_RONDA</b>:
+     * <li><b>PRIMERA_RONDA</b>: Se activa después de elegir al primer jugador; Al
+     * sacar par, se pueden liberar las fichas. Si todos los jugadores ya usaron sus
+     * 3 oportunidades, se pasa de PRIMERA_RONDA a MOVIENDO_FICHA.</li>
+     * <li><b>MOVIENDO_FICHA</b>: Se activa al lanzar los dados; Al presionar una
+     * casilla, se comprueba que esta contenga una ficha del jugador actual para así
+     * moverla, luego se mueve esta ficha con
+     * {@link #moverYEncarcelar(Ficha, CasillaEspecial)} a su siguiente casilla
+     * según el número sacado con los dados. Si se saco par, el jugador puede volver
+     * a tirar los dados, de lo contrario se pasa el turno.</li>
+     * <li><b>ENCARCELANDO_OPONENTE_ANTERIOR</b>: Se activa al soplar; Al presionar
+     * una casilla que contenga una ficha del oponente anterior, esta se enviará a
+     * su cárcel. Luego el jugador puede tirar sus dados. si se tiran los dados,
+     * este movimiento ya no es posible.</li>
+     * <li><b>SACANDO_FICHA_DEL_JUEGO</b>: Se activa al sacar 3 pares seguidos; Al
+     * presionar una casilla que contenga una ficha del jugador actual, esta se
+     * enviará a su entrada, Luego se comprobará si el jugador es el ganador.</li>
+     * </ul>
      * 
-     * @param casillaPresionada
-     * @param infoLabel
-     * @param currentPlayerLabel
+     * @param casillaPresionada {@link CasillaEspecial} que se presionó.
      */
     public void presionarCasilla(CasillaEspecial casillaPresionada) {
 
@@ -1057,7 +1184,7 @@ public class Tablero extends Thread {
                 } // else: no se presiono la casilla cárcel
 
                 // se mueve una ficha de la casilla presionada a su siguiente casilla
-                moverFicha(ficha, casillaSiguiente);
+                moverYEncarcelar(ficha, casillaSiguiente);
 
                 // si se encarceló a algún oponente
                 if (jugadorActual.envioACarcel()) {
@@ -1172,10 +1299,7 @@ public class Tablero extends Thread {
     /**
      * Sopla la jugada anterior si y solo si el jugador anterior no envio a ningún
      * oponente a la cárcel aún pudiendo hacerlo. Además solo se puede soplar una
-     * vez por turno.
-     * 
-     * @param infoLabel Label el cual se actualizará para dar información después de
-     *                  soplar
+     * vez por turno y antes de tirar los dados.
      */
     public void soplar() {
 
@@ -1191,6 +1315,15 @@ public class Tablero extends Thread {
 
         } // else: si sí se está moviendo alguna ficha
 
+        // si se esperaba a que se presionara una casilla.
+        if (waitForPresionarCasilla) {
+
+            // se cancela
+            infoLabel.setText("No puedes hacer eso, ya tiraste tus dados.");
+            return;
+
+        }
+
         // si no hay jugador anterior al cual soplar
         if (getJugadorAnterior() == null) {
 
@@ -1201,8 +1334,8 @@ public class Tablero extends Thread {
         } // else: alguién más ya jugó anteriormente
 
         // si el jugador anterior pudo enviar a la carcel y no envió a ningún oponente,
-        // y el jugador anterior no ha soplado en su turno
-        if (jugadorAnterior.pudoEnviarACarcel() && !jugadorAnterior.envioACarcel()
+        // y el jugador actual no ha soplado en su turno
+        if (sePuedeSoplarA(jugadorAnterior) && !jugadorAnterior.envioACarcel()
                 && !jugadorActual.soploJugadaAnterior()) {
 
             // se cambia el estado
@@ -1240,12 +1373,14 @@ public class Tablero extends Thread {
         gc.clearRect(0, 0, canvasWidth, canvasHeight);
         gc.drawImage(background, 0, 0, min, min);
 
+        // fichas de cada casilla
         for (CasillaEspecial c : casillas) {
 
             c.drawFichas(gc);
 
         }
 
+        // fichas de cada carcel y entrada de cada jugador
         for (Jugador j : jugadores) {
 
             if (j != null) {
@@ -1261,11 +1396,12 @@ public class Tablero extends Thread {
         gc.setFill(Color.BLACK);
 
         double x, y, w, h;
+
+        // turno actual
         x = jugadorActual.getCarcel().getX();
         y = jugadorActual.getCarcel().getY();
         w = jugadorActual.getCarcel().getWidth();
         h = jugadorActual.getCarcel().getHeight();
-
         gc.fillOval(x, y, w, h);
 
         gc.restore();

@@ -8,7 +8,8 @@ public class Coords {
      * Convierte un valor x relativo a un tablero de tamaño 800*800, a otro valor
      * relativo a un tablero <b>size*size</b>.
      * 
-     * @param x Valor a convertir.
+     * @param x    Valor a convertir.
+     * @param size Tamaño destino a convertir x.
      * @return Valor relativo de un tablero 800x800 convertido a otro relativo a
      *         este tablero.
      */

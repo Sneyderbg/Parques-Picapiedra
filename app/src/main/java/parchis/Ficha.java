@@ -14,7 +14,7 @@ public class Ficha {
     private Jugador jugadorPadre;
 
     /**
-     * {@Casilla} en la cual se encuentra esta Ficha.
+     * {@link CasillaEspecial} en la cual se encuentra esta Ficha.
      */
     private CasillaEspecial casilla;
 
@@ -50,18 +50,10 @@ public class Ficha {
 
     /**
      * Asigna la casilla en la cual se debe encontrar esta ficha.
-     * <ul>
-     * <li>Si la casilla entregada como parámetro no contiene está ficha, se lanzará
-     * un {@link IllegalArgumentException}
      * 
-     * @param casilla {@link CasillaEspecial} la cual ya debe contener está ficha.
+     * @param casilla {@link CasillaEspecial} a asignar.
      */
     protected void setCasilla(CasillaEspecial casilla) {
-
-        // if (casilla.getFichas().contains(this)) {
-        // throw new IllegalArgumentException(
-        // "La casilla debe contener esta ficha para poder asignarse a esta ficha.");
-        // }
 
         this.casilla = casilla;
 
@@ -136,17 +128,17 @@ public class Ficha {
     }
 
     /**
-     * Dibuja esta ficha en la posición dada por <b>(x, y)</b> y con el radio dado.
+     * Dibuja esta ficha en la posición <b>(x, y)</b> con diámetro <b>diameter</b>.
      * 
      * @param gc       {@link GraphicsContext} usado para dibujar.
-     * @param x        Centro X de la ficha.
-     * @param y        Centro Y de la ficha.
-     * @param diameter Radio de la ficha.
+     * @param x        Esquina superior izquierda X de la ficha.
+     * @param y        Esquina superior izquierda Y de la ficha.
+     * @param diameter Diámetro de la ficha.
      */
     public void draw(GraphicsContext gc, double x, double y, double diameter) {
 
         gc.save();
-        
+
         gc.setFill(getColor());
         gc.setStroke(Color.WHITE);
 

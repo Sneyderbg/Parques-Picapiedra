@@ -29,7 +29,8 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
     }
 
     /**
-     * Identificador de casilla;
+     * Identificador de casilla: Es el número que normalmente representa la casilla
+     * en un parqués.
      */
     private int idCasilla;
 
@@ -59,10 +60,10 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
     /**
      * Constructor. Crea una casilla con los parámetros dados.
      * 
-     * @param jugadorPadre Jugador al que pertenece esta {@link CasillaEspecial}.
-     * @param IdCasilla    Entero que identifica esta {@link CasillaEspecial}.
-     * @param tipo         Tipo de {@link CasillaEspecial}. Veáse
-     *                     {@link TipoCasilla}.
+     * @param IdCasilla Entero que identifica esta {@link CasillaEspecial}.
+     * @param tipo      Tipo de {@link CasillaEspecial}. Veáse
+     *                  {@link TipoCasilla}.
+     * @param color     Color de la {@link CasillaEspecial}.
      */
     public CasillaEspecial(int IdCasilla, TipoCasilla tipo, Color color) {
 
@@ -78,6 +79,13 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
 
     }
 
+    /**
+     * Mueve la ficha <b>f</b> a la casilla <b>c</b>, solo si la ficha se encuentra
+     * en esta casilla.
+     * 
+     * @param f Ficha a mover.
+     * @param c Casilla a insertar la ficha.
+     */
     public void moverFichaA(Ficha f, CasillaEspecial c) {
 
         assert (fichas.contains(f)) : "la ficha 'f' no se encuentra en esta casilla";
@@ -88,7 +96,7 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
     }
 
     /**
-     * Inserta una ficha en el vector {@link fichas}.
+     * Inserta una ficha en esta casilla, y cambia su campo {@link Ficha#casilla}.
      * 
      * @param ficha {@link Ficha} a insertar en esta {@link CasillaEspecial}.
      */
@@ -100,21 +108,20 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
     }
 
     /**
-     * Mueve todas las fichas de la casilla dada a esta {@link CasillaEspecial}.
+     * Mueve todas las fichas de esta casilla a la {@link CasillaEspecial} <b>c</b>.
      * 
-     * @param c {@link CasillaEspecial} de la cual mover sus fichas.
+     * @param c {@link CasillaEspecial} a la cual mover las fichas.
      */
-    public void moverTodasLasFichasDe(CasillaEspecial c) {
+    public void moverTodasLasFichasA(CasillaEspecial c) {
 
-        Iterator<Ficha> it = c.iterator();
+        Iterator<Ficha> it = fichas.iterator();
         Ficha f;
 
         while (it.hasNext()) {
 
             f = it.next();
             it.remove();
-            f.setCasilla(this);
-            fichas.add(f);
+            c.insertarFicha(f);
 
         }
 
@@ -130,7 +137,14 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
      */
     public boolean removerFicha(Ficha ficha) {
 
-        return fichas.remove(ficha);
+        if (fichas.remove(ficha)) {
+
+            ficha.setCasilla(null);
+            return true;
+
+        }
+
+        return false;
 
     }
 
@@ -139,24 +153,31 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
      */
     public void removerTodasLasFichas() {
 
-        fichas.clear();
+        Iterator<Ficha> it = fichas.iterator();
+        Ficha f;
+
+        while (it.hasNext()) {
+
+            f = it.next();
+            removerFicha(f);
+
+        }
 
     }
 
+    /**
+     * Encarcela todas las fichas de esta casilla, a sus casillas CARCELES
+     * correspondientes.
+     */
     public void encarcelarTodasLasFichas() {
 
-        CasillaEspecial casillaCarcel;
-        Ficha f;
-
         Iterator<Ficha> iterator = fichas.iterator();
+        Ficha f;
 
         while (iterator.hasNext()) {
 
             f = iterator.next();
-            iterator.remove();
-
-            casillaCarcel = f.getCarcel();
-            casillaCarcel.insertarFicha(f);
+            moverFichaA(f, f.getCarcel());
 
         }
 
@@ -196,12 +217,11 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
     }
 
     /**
-     * Comprueba si existe al menos una ficha con color diferente al color dado como
-     * parámetro.
+     * Comprueba si existe al menos una ficha que no pertenezca al jugador <b>j</b>.
      * 
-     * @param color Color a comparar.
+     * @param j Jugador a comparar.
      * @return {@code true} si existe al menos una ficha que cumpla con:
-     *         {@code f.getColor() != color}, {@code false} de lo contrario.
+     *         {@code f.getJugadorPadre() != j}, {@code false} de lo contrario.
      */
     public boolean contieneFichasOponentes(Jugador j) {
 
@@ -239,6 +259,12 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
 
     }
 
+    /**
+     * Retorna una ficha de esta casilla.
+     * 
+     * @param idx Índice de la ficha a retornar.
+     * @return Ficha con índice <b>idx</b> del vector {@link fichas}.
+     */
     public Ficha getFicha(int idx) {
 
         return fichas.get(idx);
@@ -297,15 +323,12 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
         return color;
     }
 
-    public double getCenterX() {
-        return centerX;
-    }
-
-    public double getCenterY() {
-        return centerY;
-    }
-
-    public int size() {
+    /**
+     * Retorna el número de fichas que contiene esta casilla.
+     * 
+     * @return {@code fichas.size()}.
+     */
+    public int length() {
         return fichas.size();
     }
 
@@ -403,7 +426,7 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
 
         double posXEnCasilla, posYEnCasilla;
 
-        int n = size();
+        int n = length();
 
         // casos si hay 4 o 3 fichas
         switch (n) {
