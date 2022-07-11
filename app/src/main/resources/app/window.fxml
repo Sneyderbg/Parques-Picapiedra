@@ -109,7 +109,7 @@
                         </GridPane>
                         <HBox styleClass="chooseHBox">
                            <children>
-                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startEvt" text="Start">
+                              <Button alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#startEvt" text="Iniciar">
                                  <effect>
                                     <Lighting specularConstant="0.59" specularExponent="40.0" surfaceScale="2.6">
                                        <bumpInput>
@@ -121,7 +121,7 @@
                                     </Lighting>
                                  </effect>
                               </Button>
-                              <Button mnemonicParsing="false" onAction="#clearEvt" text="Clear">
+                              <Button mnemonicParsing="false" onAction="#clearEvt" text="Limpiar">
                                  <effect>
                                     <Lighting specularConstant="0.59" specularExponent="40.0" surfaceScale="2.6">
                                        <bumpInput>
@@ -166,7 +166,7 @@
                                  </children>
                               </HBox>
                               <TextField fx:id="customDadosTextField" visible="false" />
-                              <Button mnemonicParsing="false" onAction="#rollTheDice" text="Roll">
+                              <Button mnemonicParsing="false" onAction="#rollTheDice" text="Tirar">
                                  <effect>
                                     <Lighting specularConstant="0.59" specularExponent="40.0" surfaceScale="2.6">
                                        <bumpInput>
@@ -194,7 +194,7 @@
                         </VBox>
                         <VBox styleClass="VBox">
                            <children>
-                              <Button id="newGameBtn" fx:id="newGameBtn" mnemonicParsing="false" onAction="#newGameEvt" text="New Game">
+                              <Button id="newGameBtn" fx:id="newGameBtn" mnemonicParsing="false" onAction="#newGameEvt" text="Nuevo Juego">
                                  <effect>
                                     <Lighting specularConstant="0.59" specularExponent="40.0" surfaceScale="2.6">
                                        <bumpInput>
@@ -206,7 +206,7 @@
                                     </Lighting>
                                  </effect>
                               </Button>
-                              <Button id="resetBtn" mnemonicParsing="false" onAction="#resetEvt" prefHeight="26.0" prefWidth="74.0" text="Reset">
+                              <Button id="resetBtn" mnemonicParsing="false" onAction="#resetEvt" prefHeight="26.0" prefWidth="74.0" text="Reiniciar">
                                  <effect>
                                     <Lighting specularConstant="0.59" specularExponent="40.0" surfaceScale="2.6">
                                        <bumpInput>
@@ -218,7 +218,7 @@
                                     </Lighting>
                                  </effect>
                               </Button>
-                              <Button id="exitBtn" mnemonicParsing="false" onAction="#exitEvt" prefHeight="26.0" prefWidth="74.0" text="Exit">
+                              <Button id="exitBtn" mnemonicParsing="false" onAction="#exitEvt" prefHeight="26.0" prefWidth="74.0" text="Salir">
                                  <effect>
                                     <Lighting specularConstant="0.59" specularExponent="40.0" surfaceScale="2.6">
                                        <bumpInput>

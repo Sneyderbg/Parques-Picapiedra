@@ -31,10 +31,25 @@ import util.Coords;
 
 public class WindowController implements Initializable {
 
-    private final boolean DEBUGGING = true;
+    /**
+     * Flag for debugging.
+     */
+    private final boolean DEBUGGING = false;
+
+    /**
+     * Tablero
+     */
     private Tablero tablero;
+
+    /**
+     * Número de jugadores elegidos para jugar.
+     */
     private int choosenPlayers;
-    private Image dadosImage;
+
+    /**
+     * Imagen con los sprites de los dados.
+     */
+    private Image dadosSpritesImage;
 
     @FXML
     private AnchorPane drawingPane;
@@ -78,9 +93,9 @@ public class WindowController implements Initializable {
         // se añaden las opciones para elegir el número de fichas por jugador
         nPawnsComboBox.getItems().addAll(2, 3, 4);
 
-        dadosImage = new Image(getClass().getResource("dados.png").toExternalForm(), 150, 100, false, false);
-        dado0ImageView.setImage(dadosImage);
-        dado1ImageView.setImage(dadosImage);
+        dadosSpritesImage = new Image(getClass().getResource("dados.png").toExternalForm(), 150, 100, false, false);
+        dado0ImageView.setImage(dadosSpritesImage);
+        dado1ImageView.setImage(dadosSpritesImage);
 
         if (DEBUGGING) {
 
@@ -206,8 +221,8 @@ public class WindowController implements Initializable {
      * dados.
      * 
      * @param casilla {@link CasillaEspecial} a actualizar.
-     * @param x       Posición x.
-     * @param y       Posición y.
+     * @param x       Posición central x.
+     * @param y       Posición central y.
      * @param width   Ancho
      * @param height  Alto
      * @param angle   Rotación (sentido horario).
@@ -226,6 +241,12 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Maneja los clicks en los controles de todas las casillas, es decir si se
+     * presiona una casilla.
+     * 
+     * @param evt event.
+     */
     void casillaClicked(MouseEvent evt) {
 
         CasillaEspecial casilla = (CasillaEspecial) evt.getSource();
@@ -236,6 +257,11 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar el botón 'tirar'. Tira los dados.
+     * 
+     * @param evt event.
+     */
     @FXML
     void rollTheDice(ActionEvent evt) {
 
@@ -263,6 +289,12 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar el botón 'soplar'. Se intenta soplar al jugador
+     * anterior en el tablero, si se puede.
+     * 
+     * @param evt event.
+     */
     @FXML
     void soplarEvt(ActionEvent evt) {
 
@@ -276,6 +308,12 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar el botón 'nuevo juego'. Muestra la vista para
+     * configurar los jugadores e iniciar un nuevo juego.
+     * 
+     * @param evt event.
+     */
     @FXML
     void newGameEvt(ActionEvent evt) {
 
@@ -324,6 +362,11 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar el botón 'reiniciar'. Reinicia el tablero.
+     * 
+     * @param evt
+     */
     @FXML
     void resetEvt(ActionEvent evt) {
 
@@ -333,6 +376,11 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar el botón 'salir'. Finaliza la ejecución.
+     * 
+     * @param evt
+     */
     @FXML
     void exitEvt(ActionEvent evt) {
 
@@ -340,6 +388,12 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar el botón 'limpiar' en la vista de configuración de
+     * jugadores. Limpia las entradas de texto y reinicia los jugadores elegidos.
+     * 
+     * @param evt event.
+     */
     @FXML
     void clearEvt(ActionEvent evt) {
 
@@ -363,6 +417,12 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar el botón 'iniciar' en la vista de configuración de
+     * jugadores. Inicia un nuevo juego creando un tablero con los datos dados.
+     * 
+     * @param evt
+     */
     @FXML
     void startEvt(ActionEvent evt) {
 
@@ -430,11 +490,23 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Valida las entradas en la vista de configuración de jugadores.
+     * <p>
+     * Se válida que:
+     * <ul>
+     * <li>Se haya elegido un número de fichas por jugador.</li>
+     * <li>Se hayan elegido y dado un nombre a al menos 2 jugadores.</li>
+     * </ul>
+     * 
+     * @return {@code true} si se cumple lo anterior, {@code false} de lo contrario.
+     */
     private boolean validateInputs() {
 
         Alert warningAlert = new Alert(AlertType.WARNING);
         warningAlert.setTitle("Warning");
 
+        // si no se ha elegido número de fichas por jugador
         if (nPawnsComboBox.getValue() == null) {
 
             warningAlert.setHeaderText("Invalid number of pawns per player");
@@ -444,6 +516,7 @@ public class WindowController implements Initializable {
 
         }
 
+        // si hay menos de 2 jugadores elegidos
         if (choosenPlayers < 2) {
 
             warningAlert.setHeaderText("Invalid number of players");
@@ -457,12 +530,14 @@ public class WindowController implements Initializable {
         CheckBox playerCheckBox;
         TextField playerTextField;
 
+        // para cada checkbox y textfield
         for (Node node : choosePlayersPane.getChildren()) {
 
             playerHBox = (HBox) node;
             playerCheckBox = (CheckBox) playerHBox.getChildren().get(0);
             playerTextField = (TextField) playerHBox.getChildren().get(1);
 
+            // si hay un jugador elegido, y este tiene un nombre no válido.
             if (playerCheckBox.isSelected()
                     && (playerTextField.getText() == null || playerTextField.getText().trim().length() == 0)) {
 
@@ -479,6 +554,13 @@ public class WindowController implements Initializable {
 
     }
 
+    /**
+     * Se llama al presionar un CheckBox de la vista de configuración de jugadores.
+     * Si el checkbox presionado se activó, se suma 1 a los jugadores elegidos, si
+     * se desactivó, se resta 1.
+     * 
+     * @param evt event.
+     */
     @FXML
     void checkBoxClicked(ActionEvent evt) {
 

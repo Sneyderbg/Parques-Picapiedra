@@ -336,8 +336,8 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
      * Actualiza el rectangulo contenedor de esta Casilla el cual se usa para
      * dibujar las fichas contenidas en esta casilla,
      * 
-     * @param x      Posición x.
-     * @param y      Posición y.
+     * @param x      Posición central x.
+     * @param y      Posición central y.
      * @param width  Ancho del rectángulo.
      * @param height Altura del rectángulo.
      * @param angle  Ángulo a rotar.
