@@ -2,9 +2,6 @@
 
 Esta es una recreación del Parqués Picapiedra, variación del Parqués Colombiano proveniente del Parchís Español
 
-### Reglas básicas:
-
-- ¡POR RELLENAR! 
 
 ### Reglas específicas:
 
