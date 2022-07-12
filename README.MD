@@ -66,3 +66,7 @@ gradlew build jlink
 ```console
 gradlew build jlinkZip
 ```
+El resultado se puede encontrar en: 
+- `<path-to-project/app/build/image`
+- `<path-to-project/app/build/distributions`
+respectivamente.
