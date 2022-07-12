@@ -8,6 +8,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -21,6 +22,7 @@ public class App extends Application {
 
         primaryStage.setTitle("Parqués");
         primaryStage.setScene(scene);
+        primaryStage.getIcons().add(new Image(getClass().getResource("icon.png").toExternalForm()));
         primaryStage.show();
 
         Bounds rootBounds = root.getBoundsInLocal();
@@ -31,6 +33,7 @@ public class App extends Application {
 
         primaryStage.setMinWidth(prefBounds.getWidth() + deltaW);
         primaryStage.setMinHeight(prefBounds.getHeight() + deltaH);
+
     }
 
     private Bounds getPrefBounds(Node node) {

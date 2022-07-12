@@ -455,13 +455,8 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
 
                     for (int j = 0; j < i + 1; j++) {
 
-                        posXEnCasilla = (j) * getWidth() / 2;
-                        if (i == 0) {
-
-                            posXEnCasilla += getWidth() / 4;
-
-                        }
-                        posYEnCasilla = (i) * getHeight() / 2;
+                        posXEnCasilla = (3 - 2 * i + 4 * j) * getWidth() / 8;
+                        posYEnCasilla = (1 + 4 * i) * getHeight() / 8;
 
                         fichas.get(i + j).draw(gc, getX() + posXEnCasilla, getY() + posYEnCasilla, diameter);
 
