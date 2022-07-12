@@ -57,7 +57,7 @@
 
 .label {
 
-    -fx-background-radius: 5px;
+    -fx-background-radius: 50px;
     -fx-width: fit-content;
     -fx-padding: 4 4 4 4;
     -fx-border-color: white;

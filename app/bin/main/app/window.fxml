@@ -148,7 +148,7 @@
                            <children>
                               <Label fx:id="nextPlayerLabel" text="Aquí se mostrará el turno">
                                  <effect>
-                                    <DropShadow height="30.36" radius="31.64" spread="0.54" width="98.2" />
+                                    <DropShadow height="64.28" radius="40.120000000000005" spread="0.54" width="98.2" />
                                  </effect>
                               </Label>
                               <HBox id="imageHBox" prefHeight="150.0" prefWidth="59.0" styleClass="HBox">

@@ -177,7 +177,8 @@ public class CasillaEspecial extends Rectangle implements Iterable<Ficha> {
         while (iterator.hasNext()) {
 
             f = iterator.next();
-            moverFichaA(f, f.getCarcel());
+            iterator.remove();
+            f.getCarcel().insertarFicha(f);
 
         }
 

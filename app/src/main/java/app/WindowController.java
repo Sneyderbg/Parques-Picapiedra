@@ -370,6 +370,11 @@ public class WindowController implements Initializable {
     @FXML
     void resetEvt(ActionEvent evt) {
 
+        if (tablero == null || tablero.getEstado() == Estado.NO_INICIADO) {
+
+            return;
+        }
+
         tablero.reiniciarTablero();
         tablero.iniciarTablero();
         tablero.draw();

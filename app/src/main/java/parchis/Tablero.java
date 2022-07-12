@@ -9,6 +9,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import parchis.CasillaEspecial.TipoCasilla;
 
@@ -364,38 +365,35 @@ public class Tablero extends Thread {
 
         int i = 0;
 
-        // si no se ha asignado el jugador actual
-        if (jugadorActual == null) {
+        if (jugadorActual == null) { // si no se ha asignado el jugador actual
 
             // se busca el primero no nulo
             while (i < jugadores.length && jugadores[i] == null) {
                 i++;
             }
 
-            jugadorActual = jugadores[i];
-            jugadorActual.setSoploJugadaAnterior(false);
-            nextPlayerLabel.setText("Turno de " + jugadorActual.getNombre());
-            return;
-        }
+        } else {
 
-        // se avanza hasta el jugadorActual
-        while (i < jugadores.length && jugadores[i] != jugadorActual) {
+            // se avanza hasta el jugadorActual
+            while (i < jugadores.length && jugadores[i] != jugadorActual) {
+                i++;
+            }
+
             i++;
-        }
-
-        i++;
-        // se busca el siguiente no nulo
-        while (i < jugadores.length && jugadores[i] == null) {
-            i++;
-        }
-
-        // si no existe un jugador no nulo antes de terminar el vector
-        if (i >= jugadores.length) {
-
-            // se busca el siguiente no nulo desde el inicio del vector.
-            i = 0;
+            // se busca el siguiente no nulo
             while (i < jugadores.length && jugadores[i] == null) {
                 i++;
+            }
+
+            // si no existe un jugador no nulo antes de terminar el vector
+            if (i >= jugadores.length) {
+
+                // se busca el siguiente no nulo desde el inicio del vector.
+                i = 0;
+                while (i < jugadores.length && jugadores[i] == null) {
+                    i++;
+                }
+
             }
 
         }
@@ -409,7 +407,17 @@ public class Tablero extends Thread {
         // se reinicia el campo 'soploJugadaAnterior'
         jugadorActual.setSoploJugadaAnterior(false);
 
+        // se actualiza el nextPlayerLabel
+        String backgroundColor, textColor;
+        backgroundColor = jugadorActual.getColor().toString();
+        textColor = jugadorActual.getColor() == Color.YELLOW ? Color.BLACK.toString() : Color.WHITE.toString();
+
+        backgroundColor = backgroundColor.replace("0x", "#");
+        textColor = textColor.replace("0x", "#");
+
         nextPlayerLabel.setText("Turno de " + jugadorActual.getNombre());
+        nextPlayerLabel.setStyle(String.format("-fx-background-color: %s;\n" +
+                "-fx-text-fill: %s;", backgroundColor, textColor));
 
     }
 
@@ -778,10 +786,14 @@ public class Tablero extends Thread {
         dados.reset();
 
         // se mueven todas las fichas de todas las casillas a sus carceles
-        for (CasillaEspecial c : casillas) {
 
+        CasillaEspecial c;
+
+        for (int i = 0; i < casillas.size(); i++) {
+
+            c = casillas.get(i);
             c.encarcelarTodasLasFichas();
-
+            
         }
 
         // lo mismo pero con todas las entradas de cada jugador
@@ -949,6 +961,19 @@ public class Tablero extends Thread {
                     // reinicia el jugador anterior
                     jugadorAnterior = null;
                     jugadorActual = primerJugador;
+
+                    // se actualiza el nextPlayerLabel
+                    String backgroundColor, textColor;
+                    backgroundColor = jugadorActual.getColor().toString();
+                    textColor = jugadorActual.getColor() == Color.YELLOW ? Color.BLACK.toString()
+                            : Color.WHITE.toString();
+
+                    backgroundColor = backgroundColor.replace("0x", "#");
+                    textColor = textColor.replace("0x", "#");
+
+                    nextPlayerLabel.setText("Turno de " + jugadorActual.getNombre());
+                    nextPlayerLabel.setStyle(String.format("-fx-background-color: %s;\n" +
+                            "-fx-text-fill: %s;", backgroundColor, textColor));
 
                     infoLabel.setText("El primer turno va para: " + primerJugador.getNombre());
                     break;
