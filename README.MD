@@ -2,9 +2,6 @@
 
 Esta es una recreación del Parqués Picapiedra, variación del Parqués Colombiano proveniente del Parchís Español
 
-### Reglas básicas:
-
-- ¡POR RELLENAR! 
 
 ### Reglas específicas:
 
@@ -19,7 +16,7 @@ Esta es una recreación del Parqués Picapiedra, variación del Parqués Colombi
 
 ----------
 
-## Requisitos para ejecutar y distribuir este programa:
+## Requisitos para compilar este programa:
 
 - OpenJDK-11.0.5.10 o más reciente.
 - JavaFX-18.0.1 o más reciente.
@@ -35,7 +32,7 @@ Esta es una recreación del Parqués Picapiedra, variación del Parqués Colombi
 gradlew run
 ```
 
-## Para crear y ejecutar un jar sin incluir librerías ni máquinas vistuales de java:
+## Para compilar y ejecutar un jar sin incluir librerías ni máquinas virtuales de java:
 - En powershell:
 ```console
 .\gradlew build jar
@@ -50,7 +47,7 @@ java --module-path=<path-to>\javafx-sdk-18.0.1\lib --add-modules=javafx.controls
 ```
 El jar que se crea se encuentra de forma predeterminada en: `<project-path>/app/build/libs`
 
-## Para crear una distribución con todas las librerías y demás componentes necesarios:
+## Para crear una distribución con todas las librerías y JRE incluido:
 - En powershell:
 ```console
 .\gradlew build jlink
@@ -59,3 +56,17 @@ El jar que se crea se encuentra de forma predeterminada en: `<project-path>/app/
 ```console
 gradlew build jlink
 ```
+
+### Si solo quiere incluir las librerías puede ejecutar el siguiente comando:
+- En powershell:
+```console
+.\gradlew build jlinkZip
+```
+- En bash:
+```console
+gradlew build jlinkZip
+```
+El resultado se puede encontrar en: 
+- `<path-to-project/app/build/image`
+- `<path-to-project/app/build/distributions`
+respectivamente.
